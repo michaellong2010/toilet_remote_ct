@@ -97,6 +97,7 @@ Uint8 ByteRead(void);
 void A7105_Config(void);
 #define StrobeCmd ByteSend
 Uint8 A7105_ReadReg(Uint8 addr);
+void SetCH(Uint8);
 
 #ifdef	__cplusplus
 }

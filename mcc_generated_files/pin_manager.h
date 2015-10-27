@@ -73,6 +73,23 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 #define MSPI_CS_SetAnalogMode()   do { ANSA5 = 1; } while(0)
 #define MSPI_CS_SetDigitalMode()   do { ANSA5 = 0; } while(0)
+// get/set rocker_lock aliases
+#define rocker_lock_TRIS               TRISB5
+#define rocker_lock_LAT                LATB5
+#define rocker_lock_PORT               PORTBbits.RB5
+#define rocker_lock_WPU                WPUB5
+#define rocker_lock_ANS                ANSB5
+#define rocker_lock_SetHigh()    do { LATB5 = 1; } while(0)
+#define rocker_lock_SetLow()   do { LATB5 = 0; } while(0)
+#define rocker_lock_Toggle()   do { LATB5 = ~LATB5; } while(0)
+#define rocker_lock_GetValue()         PORTBbits.RB5
+#define rocker_lock_SetDigitalInput()    do { TRISB5 = 1; } while(0)
+#define rocker_lock_SetDigitalOutput()   do { TRISB5 = 0; } while(0)
+
+#define rocker_lock_SetPullup()    do { WPUB5 = 1; } while(0)
+#define rocker_lock_ResetPullup()   do { WPUB5 = 0; } while(0)
+#define rocker_lock_SetAnalogMode()   do { ANSB5 = 1; } while(0)
+#define rocker_lock_SetDigitalMode()   do { ANSB5 = 0; } while(0)
 // get/set SCK1 aliases
 #define SCK1_TRIS               TRISC3
 #define SCK1_LAT                LATC3

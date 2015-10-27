@@ -68,7 +68,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #pragma config HFOFST = ON    // HFINTOSC Fast Start-up->HFINTOSC output and ready status are not delayed by the oscillator stable status
 #pragma config PBADEN = ON    // PORTB A/D Enable bit->PORTB<5:0> pins are configured as analog input channels on Reset
 #pragma config CCP3MX = PORTB5    // P3A/CCP3 Mux bit->P3A/CCP3 input/output is multiplexed with RB5
-#pragma config MCLRE = EXTMCLR    // MCLR Pin Enable bit->MCLR pin enabled, RE3 input pin disabled
+#pragma config MCLRE = INTMCLR    // MCLR Pin Enable bit->RE3 input pin enabled; MCLR disabled
 #pragma config T3CMX = PORTC0    // Timer3 Clock input mux bit->T3CKI is on RC0
 
 // CONFIG4L
@@ -112,12 +112,13 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 void SYSTEM_Initialize(void) {
     OSCILLATOR_Initialize();
     PIN_MANAGER_Initialize();
+    INTERRUPT_Initialize();
     SPI1_Initialize();
 }
 
 void OSCILLATOR_Initialize(void) {
-    // SCS INTOSC; IDLEN disabled; IRCF 1MHz_HFINTOSC/16; 
-    OSCCON = 0x32;
+    // SCS FOSC; IDLEN disabled; IRCF 1MHz_HFINTOSC/16; 
+    OSCCON = 0x30;
     // PRISD enabled; MFIOSEL disabled; SOSCGO disabled; 
     OSCCON2 = 0x04;
     // INTSRC disabled; PLLEN disabled; TUN 0x00; 

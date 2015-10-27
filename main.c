@@ -13,7 +13,8 @@
 //#define DBG_PRINTF printf
 #define DBG_PRINTF
 void main(void) {
-    initRF ();
-    DBG_PRINTF ( "this is a test\n" );
+    //initRF ();
+    //DBG_PRINTF ( "this is a test\n" );
+    while (1);
     return;
 }

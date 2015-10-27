@@ -180,6 +180,48 @@ void WaitBit_0(Uint8 reg, Uint8 nbit)
 }
 
 /*********************************************************************
+** Err_State
+*********************************************************************/
+void Err_State(void)
+{
+    //ERR display
+    //Error Proc...
+    //...
+}
+
+/*********************************************************************
+** SetCH
+*********************************************************************/
+void SetCH(Uint8 ch)
+{
+    //RF freq = RFbase + (CH_Step * ch)
+	A7105_WriteReg(PLL1_REG, ch);
+} 
+
+/*********************************************************************
+** SelVCOBand
+*********************************************************************/
+void SelVCOBand(Uint8 vb1, Uint8 vb2)
+{
+    Uint8 diff1,diff2;
+
+	if (vb1>=4)
+	    diff1 = vb1-4;
+	else
+	    diff1 = 4-vb1;
+
+    if (vb2>=4)
+        diff2 = vb2-4;
+    else
+        diff2 = 4-vb2;
+
+    if (diff1 == diff2 || diff1 > diff2)
+        A7105_WriteReg(VCOCAL1_REG, (vb1 | 0x08));//manual setting vb1 value
+    else
+        A7105_WriteReg(VCOCAL1_REG, (vb2 | 0x08));//manual setting vb2 value
+}
+
+/*********************************************************************
 ** calibration
 *********************************************************************/
 void A7105_Cal(void)
@@ -200,7 +242,7 @@ void A7105_Cal(void)
 	fb = tmp & 0x0F;
 	fbcf = (tmp >>4) & 0x01;
 
-	/*if (fbcf ==1)
+	if (fbcf ==1)
 	{
 	    Err_State();
 	    while(1);
@@ -234,7 +276,7 @@ void A7105_Cal(void)
     {
         Err_State();
 	    while(1);
-	}*/
+	}
 }
 
 /*********************************************************************

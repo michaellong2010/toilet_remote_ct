@@ -54,7 +54,7 @@ void PIN_MANAGER_Initialize(void) {
 
     LATB = 0x00;
     TRISB = 0xFF;
-    ANSELB = 0x3F;
+    ANSELB = 0x1F;
     WPUB = 0x00;
 
     LATC = 0x00;
@@ -63,7 +63,21 @@ void PIN_MANAGER_Initialize(void) {
 
     INTCON2bits.nRBPU = 0x01;
 
+    // enable interrupt-on-change individually    
+    IOCB5 = 1;
 
+    // enable interrupt-on-change globally
+    INTCONbits.RBIE = 1;
+
+}
+
+void PIN_MANAGER_IOC(void) {
+    if ((IOCB5 == 1) && (RBIF == 1)) {
+        //@TODO Add handling code for IOC on pin RB5
+
+        // clear interrupt-on-change flag
+        RBIF = 0;
+    }
 }
 /**
  End of File

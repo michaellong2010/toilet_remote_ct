@@ -1,21 +1,23 @@
 /**
-  @Generated MPLAB?Code Configurator Header File
+  @Generated Interrupt Manager File
 
   @Company:
     Microchip Technology Inc.
 
   @File Name:
-    mcc.h
+    interrupt_manager.c
 
   @Summary:
-    This is the mcc.h file generated using MPLAB?Code Configurator
+    This is the Interrupt Manager file generated using MPLAB® Code Configurator
 
   @Description:
-    This header file provides implementations for driver APIs for all modules selected in the GUI.
+    This header file provides implementations for global interrupt handling.
+    For individual peripheral handlers please see the peripheral driver for
+    all modules selected in the GUI.
     Generation Information :
-        Product Revision  :  MPLAB?Code Configurator - v2.25.2
+        Product Revision  :  MPLAB® Code Configurator - v2.25.2
         Device            :  PIC18F25K22
-        Version           :  1.02
+        Driver Version    :  1.02
     The generated drivers are tested against the following:
         Compiler          :  XC8 v1.34
         MPLAB             :  MPLAB X v2.35 or v3.00
@@ -44,45 +46,31 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 (INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
  */
 
-#ifndef MCC_H
-#define	MCC_H
-#include <xc.h>
-#include "pin_manager.h"
-#include <stdint.h>
-#include <stdbool.h>
 #include "interrupt_manager.h"
-#include "spi1.h"
+#include "mcc.h"
 
-#define _XTAL_FREQ  1000000
+void INTERRUPT_Initialize(void) {
+    // Disable Interrupt Priority Vectors (16CXXX Compatibility Mode)
+    RCONbits.IPEN = 0;
 
-/**
- * @Param
-    none
- * @Returns
-    none
- * @Description
-    Initializes the device to the default states configured in the
- *                  MCC GUI
- * @Example
-    SYSTEM_Initialize(void);
- */
-void SYSTEM_Initialize(void);
+    // Clear peripheral interrupt priority bits (default reset value)
 
-/**
- * @Param
-    none
- * @Returns
-    none
- * @Description
-    Initializes the oscillator to the default states configured in the
- *                  MCC GUI
- * @Example
-    OSCILLATOR_Initialize(void);
- */
-void OSCILLATOR_Initialize(void);
+    // RBI
+    INTCON2bits.RBIP = 0;
+}
 
+void interrupt INTERRUPT_InterruptManager(void) {
+    // interrupt handler
+    if (INTCONbits.RBIE == 1 && INTCONbits.RBIF == 1) {
+        PIN_MANAGER_IOC();
 
-#endif	/* MCC_H */
+        // clear global interrupt-on-change flag
+        INTCONbits.RBIF = 0;
+    } else {
+        //Unhandled Interrupt
+    }
+}
+
 /**
  End of File
  */
