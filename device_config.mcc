@@ -4,11 +4,12 @@
         <manager generated="true" name="Pin Manager" reloadPin="manual">
             <setting name="package" option="PDIP28"/>
             <setting name="sorting" option="true"/>
+            <resource customName="MSPI_CS" digital="true" direction="OUTPUT" function="RA5" module="GPIO" name="RA5" start="true" type="pin" wpu="false"/>
             <resource customName="SCK1" digital="true" direction="OUTPUT" function="SCK1" module="MSSP1" name="RC3" start="false" type="pin" wpu="false"/>
             <resource customName="SDI1" digital="true" direction="INPUT" function="SDI1" module="MSSP1" name="RC4" start="false" type="pin" wpu="false"/>
             <resource customName="SDO1" digital="true" direction="OUTPUT" function="SDO1" module="MSSP1" name="RC5" start="false" type="pin" wpu="false"/>
-            <file checksum="3465579555" modified="false" name="pin_manager.c" path="mcc_generated_files/pin_manager.c"/>
-            <file checksum="2622226495" modified="false" name="pin_manager.h" path="mcc_generated_files/pin_manager.h"/>
+            <file checksum="1709542147" modified="false" name="pin_manager.c" path="mcc_generated_files/pin_manager.c"/>
+            <file checksum="2678963421" modified="false" name="pin_manager.h" path="mcc_generated_files/pin_manager.h"/>
         </manager>
         <manager generated="true" name="System" reloadPin="manual">
             <initializer comment="" name="Initialize">
@@ -94,6 +95,9 @@
             <setting name="ReadBufferSize" option="8"/>
             <file checksum="3382203578" modified="false" name="spi1.c" path="mcc_generated_files/spi1.c"/>
             <file checksum="2911094083" modified="false" name="spi1.h" path="mcc_generated_files/spi1.h"/>
+        </module>
+        <module generated="true" mode="GPIO" name="GPIO" order="1" reloadPin="manual" type="GPIO">
+            <resource customName="MSPI_CS" digital="true" direction="OUTPUT" function="RA5" module="GPIO" name="RA5" start="true" type="pin" wpu="false"/>
         </module>
     </modules>
 </configuration>

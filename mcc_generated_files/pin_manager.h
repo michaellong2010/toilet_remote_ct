@@ -8,12 +8,12 @@
     pin_manager.h
 
   @Summary:
-    This is the Pin Manager file generated using MPLAB® Code Configurator
+    This is the Pin Manager file generated using MPLAB?Code Configurator
 
   @Description:
     This header file provides implementations for pin APIs for all pins selected in the GUI.
     Generation Information :
-        Product Revision  :  MPLAB® Code Configurator - v2.25.2
+        Product Revision  :  MPLAB?Code Configurator - v2.25.2
         Device            :  PIC18F25K22
         Version           :  1.01
     The generated drivers are tested against the following:
@@ -59,6 +59,20 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define PULL_UP_ENABLED      1
 #define PULL_UP_DISABLED     0
 
+// get/set MSPI_CS aliases
+#define MSPI_CS_TRIS               TRISA5
+#define MSPI_CS_LAT                LATA5
+#define MSPI_CS_PORT               PORTAbits.RA5
+#define MSPI_CS_ANS                ANSA5
+#define MSPI_CS_SetHigh()    do { LATA5 = 1; } while(0)
+#define MSPI_CS_SetLow()   do { LATA5 = 0; } while(0)
+#define MSPI_CS_Toggle()   do { LATA5 = ~LATA5; } while(0)
+#define MSPI_CS_GetValue()         PORTAbits.RA5
+#define MSPI_CS_SetDigitalInput()    do { TRISA5 = 1; } while(0)
+#define MSPI_CS_SetDigitalOutput()   do { TRISA5 = 0; } while(0)
+
+#define MSPI_CS_SetAnalogMode()   do { ANSA5 = 1; } while(0)
+#define MSPI_CS_SetDigitalMode()   do { ANSA5 = 0; } while(0)
 // get/set SCK1 aliases
 #define SCK1_TRIS               TRISC3
 #define SCK1_LAT                LATC3

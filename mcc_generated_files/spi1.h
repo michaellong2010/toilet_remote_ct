@@ -65,7 +65,8 @@ extern "C" {
       Section: Macro Declarations
      */
 
-#define DUMMY_DATA 0x0
+//#define DUMMY_DATA 0x0
+#define DUMMY_DATA 0x7A
 
     /**
       Section: SPI1 Module APIs
@@ -263,6 +264,9 @@ extern "C" {
      */
     void SPI1_ClearWriteCollisionStatus(void);
 
+    /*20151027 added by michael*/
+#define MAX_SPI_DATA_BUF 10
+    uint8_t SPI_MOSI_buf [ MAX_SPI_DATA_BUF ], SPI_MISO_buf [ MAX_SPI_DATA_BUF ];
 #ifdef __cplusplus  // Provide C++ Compatibility
 
 }

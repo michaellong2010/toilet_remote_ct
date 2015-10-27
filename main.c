@@ -7,9 +7,13 @@
 
 
 #include <xc.h>
+#include <stdio.h>
 #include "A7105reg.h"
 
+//#define DBG_PRINTF printf
+#define DBG_PRINTF
 void main(void) {
     initRF ();
+    DBG_PRINTF ( "this is a test\n" );
     return;
 }
