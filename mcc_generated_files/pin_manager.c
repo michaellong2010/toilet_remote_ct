@@ -59,7 +59,7 @@ void PIN_MANAGER_Initialize(void) {
 
     LATC = 0x00;
     TRISC = 0xD7;
-    ANSELC = 0xC4;
+    ANSELC = 0xC0;
 
     INTCON2bits.nRBPU = 0x01;
 

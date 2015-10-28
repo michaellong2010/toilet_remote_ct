@@ -4,13 +4,19 @@
         <manager generated="true" name="Pin Manager" reloadPin="manual">
             <setting name="package" option="PDIP28"/>
             <setting name="sorting" option="true"/>
+            <resource customName="key_scan_in1" digital="true" direction="INPUT" function="RA4" module="GPIO" name="RA4" start="false" type="pin" wpu="false"/>
             <resource customName="MSPI_CS" digital="true" direction="OUTPUT" function="RA5" module="GPIO" name="RA5" start="true" type="pin" wpu="false"/>
+            <resource customName="key_scan_in2" digital="true" direction="INPUT" function="RA6" module="GPIO" name="RA6" start="false" type="pin" wpu="false"/>
+            <resource customName="key_scan_in3" digital="true" direction="INPUT" function="RA7" module="GPIO" name="RA7" start="false" type="pin" wpu="false"/>
             <resource customName="rocker_lock" digital="true" direction="INPUT" function="RB5" ioc="4" module="GPIO" name="RB5" start="false" type="pin" wpu="false"/>
+            <resource customName="key_scan_out1" digital="true" direction="INPUT" function="RC0" module="GPIO" name="RC0" start="false" type="pin" wpu="false"/>
+            <resource customName="key_scan_out2" digital="true" direction="INPUT" function="RC1" module="GPIO" name="RC1" start="false" type="pin" wpu="false"/>
+            <resource customName="IO_RC2" digital="true" direction="INPUT" function="RC2" module="GPIO" name="RC2" start="false" type="pin" wpu="false"/>
             <resource customName="SCK1" digital="true" direction="OUTPUT" function="SCK1" module="MSSP1" name="RC3" start="false" type="pin" wpu="false"/>
             <resource customName="SDI1" digital="true" direction="INPUT" function="SDI1" module="MSSP1" name="RC4" start="false" type="pin" wpu="false"/>
             <resource customName="SDO1" digital="true" direction="OUTPUT" function="SDO1" module="MSSP1" name="RC5" start="false" type="pin" wpu="false"/>
-            <file checksum="2941707631" modified="false" name="pin_manager.c" path="mcc_generated_files/pin_manager.c"/>
-            <file checksum="4238200146" modified="false" name="pin_manager.h" path="mcc_generated_files/pin_manager.h"/>
+            <file checksum="2835277163" modified="false" name="pin_manager.c" path="mcc_generated_files/pin_manager.c"/>
+            <file checksum="4154252036" modified="false" name="pin_manager.h" path="mcc_generated_files/pin_manager.h"/>
         </manager>
         <manager generated="true" name="System" reloadPin="manual">
             <initializer comment="" name="Initialize">
@@ -108,6 +114,12 @@
         <module generated="true" mode="GPIO" name="GPIO" order="1" reloadPin="manual" type="GPIO">
             <resource customName="MSPI_CS" digital="true" direction="OUTPUT" function="RA5" module="GPIO" name="RA5" start="true" type="pin" wpu="false"/>
             <resource customName="rocker_lock" digital="true" direction="INPUT" function="RB5" ioc="4" module="GPIO" name="RB5" start="false" type="pin" wpu="false"/>
+            <resource customName="key_scan_in1" digital="true" direction="INPUT" function="RA4" module="GPIO" name="RA4" start="false" type="pin" wpu="false"/>
+            <resource customName="key_scan_in2" digital="true" direction="INPUT" function="RA6" module="GPIO" name="RA6" start="false" type="pin" wpu="false"/>
+            <resource customName="key_scan_in3" digital="true" direction="INPUT" function="RA7" module="GPIO" name="RA7" start="false" type="pin" wpu="false"/>
+            <resource customName="key_scan_out1" digital="true" direction="INPUT" function="RC0" module="GPIO" name="RC0" start="false" type="pin" wpu="false"/>
+            <resource customName="key_scan_out2" digital="true" direction="INPUT" function="RC1" module="GPIO" name="RC1" start="false" type="pin" wpu="false"/>
+            <resource customName="IO_RC2" digital="true" direction="INPUT" function="RC2" module="GPIO" name="RC2" start="false" type="pin" wpu="false"/>
         </module>
     </modules>
 </configuration>

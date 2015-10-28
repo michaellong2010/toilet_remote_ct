@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include "A7105reg.h"
 
+
 //#define DBG_PRINTF printf
 #define DBG_PRINTF
 void main(void) {

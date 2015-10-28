@@ -59,6 +59,17 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define PULL_UP_ENABLED      1
 #define PULL_UP_DISABLED     0
 
+// get/set key_scan_in1 aliases
+#define key_scan_in1_TRIS               TRISA4
+#define key_scan_in1_LAT                LATA4
+#define key_scan_in1_PORT               PORTAbits.RA4
+#define key_scan_in1_SetHigh()    do { LATA4 = 1; } while(0)
+#define key_scan_in1_SetLow()   do { LATA4 = 0; } while(0)
+#define key_scan_in1_Toggle()   do { LATA4 = ~LATA4; } while(0)
+#define key_scan_in1_GetValue()         PORTAbits.RA4
+#define key_scan_in1_SetDigitalInput()    do { TRISA4 = 1; } while(0)
+#define key_scan_in1_SetDigitalOutput()   do { TRISA4 = 0; } while(0)
+
 // get/set MSPI_CS aliases
 #define MSPI_CS_TRIS               TRISA5
 #define MSPI_CS_LAT                LATA5
@@ -73,6 +84,28 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 #define MSPI_CS_SetAnalogMode()   do { ANSA5 = 1; } while(0)
 #define MSPI_CS_SetDigitalMode()   do { ANSA5 = 0; } while(0)
+// get/set key_scan_in2 aliases
+#define key_scan_in2_TRIS               TRISA6
+#define key_scan_in2_LAT                LATA6
+#define key_scan_in2_PORT               PORTAbits.RA6
+#define key_scan_in2_SetHigh()    do { LATA6 = 1; } while(0)
+#define key_scan_in2_SetLow()   do { LATA6 = 0; } while(0)
+#define key_scan_in2_Toggle()   do { LATA6 = ~LATA6; } while(0)
+#define key_scan_in2_GetValue()         PORTAbits.RA6
+#define key_scan_in2_SetDigitalInput()    do { TRISA6 = 1; } while(0)
+#define key_scan_in2_SetDigitalOutput()   do { TRISA6 = 0; } while(0)
+
+// get/set key_scan_in3 aliases
+#define key_scan_in3_TRIS               TRISA7
+#define key_scan_in3_LAT                LATA7
+#define key_scan_in3_PORT               PORTAbits.RA7
+#define key_scan_in3_SetHigh()    do { LATA7 = 1; } while(0)
+#define key_scan_in3_SetLow()   do { LATA7 = 0; } while(0)
+#define key_scan_in3_Toggle()   do { LATA7 = ~LATA7; } while(0)
+#define key_scan_in3_GetValue()         PORTAbits.RA7
+#define key_scan_in3_SetDigitalInput()    do { TRISA7 = 1; } while(0)
+#define key_scan_in3_SetDigitalOutput()   do { TRISA7 = 0; } while(0)
+
 // get/set rocker_lock aliases
 #define rocker_lock_TRIS               TRISB5
 #define rocker_lock_LAT                LATB5
@@ -90,6 +123,42 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define rocker_lock_ResetPullup()   do { WPUB5 = 0; } while(0)
 #define rocker_lock_SetAnalogMode()   do { ANSB5 = 1; } while(0)
 #define rocker_lock_SetDigitalMode()   do { ANSB5 = 0; } while(0)
+// get/set key_scan_out1 aliases
+#define key_scan_out1_TRIS               TRISC0
+#define key_scan_out1_LAT                LATC0
+#define key_scan_out1_PORT               PORTCbits.RC0
+#define key_scan_out1_SetHigh()    do { LATC0 = 1; } while(0)
+#define key_scan_out1_SetLow()   do { LATC0 = 0; } while(0)
+#define key_scan_out1_Toggle()   do { LATC0 = ~LATC0; } while(0)
+#define key_scan_out1_GetValue()         PORTCbits.RC0
+#define key_scan_out1_SetDigitalInput()    do { TRISC0 = 1; } while(0)
+#define key_scan_out1_SetDigitalOutput()   do { TRISC0 = 0; } while(0)
+
+// get/set key_scan_out2 aliases
+#define key_scan_out2_TRIS               TRISC1
+#define key_scan_out2_LAT                LATC1
+#define key_scan_out2_PORT               PORTCbits.RC1
+#define key_scan_out2_SetHigh()    do { LATC1 = 1; } while(0)
+#define key_scan_out2_SetLow()   do { LATC1 = 0; } while(0)
+#define key_scan_out2_Toggle()   do { LATC1 = ~LATC1; } while(0)
+#define key_scan_out2_GetValue()         PORTCbits.RC1
+#define key_scan_out2_SetDigitalInput()    do { TRISC1 = 1; } while(0)
+#define key_scan_out2_SetDigitalOutput()   do { TRISC1 = 0; } while(0)
+
+// get/set IO_RC2 aliases
+#define IO_RC2_TRIS               TRISC2
+#define IO_RC2_LAT                LATC2
+#define IO_RC2_PORT               PORTCbits.RC2
+#define IO_RC2_ANS                ANSC2
+#define IO_RC2_SetHigh()    do { LATC2 = 1; } while(0)
+#define IO_RC2_SetLow()   do { LATC2 = 0; } while(0)
+#define IO_RC2_Toggle()   do { LATC2 = ~LATC2; } while(0)
+#define IO_RC2_GetValue()         PORTCbits.RC2
+#define IO_RC2_SetDigitalInput()    do { TRISC2 = 1; } while(0)
+#define IO_RC2_SetDigitalOutput()   do { TRISC2 = 0; } while(0)
+
+#define IO_RC2_SetAnalogMode()   do { ANSC2 = 1; } while(0)
+#define IO_RC2_SetDigitalMode()   do { ANSC2 = 0; } while(0)
 // get/set SCK1 aliases
 #define SCK1_TRIS               TRISC3
 #define SCK1_LAT                LATC3
