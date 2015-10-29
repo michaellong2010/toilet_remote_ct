@@ -4,19 +4,25 @@
         <manager generated="true" name="Pin Manager" reloadPin="manual">
             <setting name="package" option="PDIP28"/>
             <setting name="sorting" option="true"/>
+            <resource customName="channel_AN0" digital="false" direction="INPUT" function="AN0" module="ADC" name="RA0" start="false" type="pin" wpu="false"/>
+            <resource customName="channel_AN1" digital="false" direction="INPUT" function="AN1" module="ADC" name="RA1" start="false" type="pin" wpu="false"/>
+            <resource customName="channel_AN2" digital="false" direction="INPUT" function="AN2" module="ADC" name="RA2" start="false" type="pin" wpu="false"/>
+            <resource customName="channel_AN3" digital="false" direction="INPUT" function="AN3" module="ADC" name="RA3" start="false" type="pin" wpu="false"/>
             <resource customName="key_scan_in1" digital="true" direction="INPUT" function="RA4" module="GPIO" name="RA4" start="false" type="pin" wpu="false"/>
             <resource customName="MSPI_CS" digital="true" direction="OUTPUT" function="RA5" module="GPIO" name="RA5" start="true" type="pin" wpu="false"/>
             <resource customName="key_scan_in2" digital="true" direction="INPUT" function="RA6" module="GPIO" name="RA6" start="false" type="pin" wpu="false"/>
             <resource customName="key_scan_in3" digital="true" direction="INPUT" function="RA7" module="GPIO" name="RA7" start="false" type="pin" wpu="false"/>
+            <resource customName="env_temp_en" digital="true" direction="INPUT" function="RB3" module="GPIO" name="RB3" start="false" type="pin" wpu="false"/>
+            <resource customName="IO_RB4" digital="true" direction="OUTPUT" function="RB4" ioc="0" module="GPIO" name="RB4" start="false" type="pin" wpu="false"/>
             <resource customName="rocker_lock" digital="true" direction="INPUT" function="RB5" ioc="4" module="GPIO" name="RB5" start="false" type="pin" wpu="false"/>
             <resource customName="key_scan_out1" digital="true" direction="INPUT" function="RC0" module="GPIO" name="RC0" start="false" type="pin" wpu="false"/>
             <resource customName="key_scan_out2" digital="true" direction="INPUT" function="RC1" module="GPIO" name="RC1" start="false" type="pin" wpu="false"/>
-            <resource customName="IO_RC2" digital="true" direction="INPUT" function="RC2" module="GPIO" name="RC2" start="false" type="pin" wpu="false"/>
+            <resource customName="key_scan_out3" digital="true" direction="INPUT" function="RC2" module="GPIO" name="RC2" start="false" type="pin" wpu="false"/>
             <resource customName="SCK1" digital="true" direction="OUTPUT" function="SCK1" module="MSSP1" name="RC3" start="false" type="pin" wpu="false"/>
             <resource customName="SDI1" digital="true" direction="INPUT" function="SDI1" module="MSSP1" name="RC4" start="false" type="pin" wpu="false"/>
             <resource customName="SDO1" digital="true" direction="OUTPUT" function="SDO1" module="MSSP1" name="RC5" start="false" type="pin" wpu="false"/>
-            <file checksum="2835277163" modified="false" name="pin_manager.c" path="mcc_generated_files/pin_manager.c"/>
-            <file checksum="4154252036" modified="false" name="pin_manager.h" path="mcc_generated_files/pin_manager.h"/>
+            <file checksum="2295719258" modified="false" name="pin_manager.c" path="mcc_generated_files/pin_manager.c"/>
+            <file checksum="190992299" modified="false" name="pin_manager.h" path="mcc_generated_files/pin_manager.h"/>
         </manager>
         <manager generated="true" name="System" reloadPin="manual">
             <initializer comment="" name="Initialize">
@@ -72,8 +78,8 @@
             <setting name="EBTR0" option="OFF"/>
             <setting name="EBTRB" option="OFF"/>
             <setting name="generateConfigBits" option="true"/>
-            <file checksum="2296003145" modified="false" name="mcc.c" path="mcc_generated_files/mcc.c"/>
-            <file checksum="1463753203" modified="false" name="mcc.h" path="mcc_generated_files/mcc.h"/>
+            <file checksum="1812807845" modified="false" name="mcc.c" path="mcc_generated_files/mcc.c"/>
+            <file checksum="92020531" modified="false" name="mcc.h" path="mcc_generated_files/mcc.h"/>
         </manager>
         <manager generated="true" name="Interrupt Manager" reloadPin="manual">
             <setting name="preemptHigh" option="true"/>
@@ -119,7 +125,9 @@
             <resource customName="key_scan_in3" digital="true" direction="INPUT" function="RA7" module="GPIO" name="RA7" start="false" type="pin" wpu="false"/>
             <resource customName="key_scan_out1" digital="true" direction="INPUT" function="RC0" module="GPIO" name="RC0" start="false" type="pin" wpu="false"/>
             <resource customName="key_scan_out2" digital="true" direction="INPUT" function="RC1" module="GPIO" name="RC1" start="false" type="pin" wpu="false"/>
-            <resource customName="IO_RC2" digital="true" direction="INPUT" function="RC2" module="GPIO" name="RC2" start="false" type="pin" wpu="false"/>
+            <resource customName="key_scan_out3" digital="true" direction="INPUT" function="RC2" module="GPIO" name="RC2" start="false" type="pin" wpu="false"/>
+            <resource customName="env_temp_en" digital="true" direction="INPUT" function="RB3" module="GPIO" name="RB3" start="false" type="pin" wpu="false"/>
+            <resource customName="IO_RB4" digital="true" direction="OUTPUT" function="RB4" ioc="0" module="GPIO" name="RB4" start="false" type="pin" wpu="false"/>
         </module>
         <module generated="true" mode="Timer" name="TMR0" order="2" reloadPin="manual" type="tmr_timer0">
             <initializer comment="" name="Initialize">
@@ -139,6 +147,28 @@
             <setting name="ticker" option="0"/>
             <file checksum="3653620505" modified="false" name="tmr0.c" path="mcc_generated_files/tmr0.c"/>
             <file checksum="820104534" modified="false" name="tmr0.h" path="mcc_generated_files/tmr0.h"/>
+        </module>
+        <module generated="true" mode="ADC" name="ADC" order="3" reloadPin="manual_auto" type="adc_sarcore_10bit">
+            <initializer comment="" name="Initialize">
+                <setting name="GO_nDONE" option="stop" register="ADCON0"/>
+                <setting name="ADON" option="enabled" register="ADCON0"/>
+                <setting name="CHS" option="AN0" register="ADCON0"/>
+                <setting name="PVCFG" option="VDD" register="ADCON1"/>
+                <setting name="TRIGSEL" option="CCP5" register="ADCON1"/>
+                <setting name="NVCFG" option="VSS" register="ADCON1"/>
+                <setting name="ADFM" option="left" register="ADCON2"/>
+                <setting name="ADCS" option="FOSC/2" register="ADCON2"/>
+                <setting name="ACQT" option="0" register="ADCON2"/>
+                <setting name="ADRESL" option="0x0" register="ADRESL"/>
+                <setting name="ADRESH" option="0x0" register="ADRESH"/>
+            </initializer>
+            <setting name="ADI" option="false"/>
+            <resource customName="channel_AN0" function="AN0" name="RA0" type="pin"/>
+            <resource customName="channel_AN1" function="AN1" name="RA1" type="pin"/>
+            <resource customName="channel_AN2" function="AN2" name="RA2" type="pin"/>
+            <resource customName="channel_AN3" function="AN3" name="RA3" type="pin"/>
+            <file checksum="3961568871" modified="false" name="adc.c" path="mcc_generated_files/adc.c"/>
+            <file checksum="2213198908" modified="false" name="adc.h" path="mcc_generated_files/adc.h"/>
         </module>
     </modules>
 </configuration>

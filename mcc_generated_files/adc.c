@@ -1,21 +1,21 @@
 /**
-  Generated Pin Manager File
+  ADC Generated Driver File
 
-  Company:
+  @Company
     Microchip Technology Inc.
 
-  File Name:
-    pin_manager.c
+  @File Name
+    adc.c
 
-  Summary:
-    This is the Pin Manager file generated using MPLAB?Code Configurator
+  @Summary
+    This is the generated driver implementation file for the ADC driver using MPLAB?Code Configurator
 
-  Description:
-    This header file provides implementations for pin APIs for all pins selected in the GUI.
+  @Description
+    This source file provides implementations for driver APIs for ADC.
     Generation Information :
         Product Revision  :  MPLAB?Code Configurator - v2.25.2
         Device            :  PIC18F25K22
-        Driver Version    :  1.02
+        Driver Version    :  2.00
     The generated drivers are tested against the following:
         Compiler          :  XC8 v1.34
         MPLAB             :  MPLAB X v2.35 or v3.00
@@ -44,40 +44,76 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 (INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
  */
 
+/**
+  Section: Included Files
+ */
+
 #include <xc.h>
-#include "pin_manager.h"
+#include "adc.h"
 
-void PIN_MANAGER_Initialize(void) {
-    LATA = 0x20;
-    TRISA = 0xDF;
-    ANSELA = 0x0F;
+/**
+  Section: ADC Module APIs
+ */
 
-    LATB = 0x00;
-    TRISB = 0xEF;
-    ANSELB = 0x07;
-    WPUB = 0x00;
+void ADC_Initialize(void) {
+    // set the ADC to the options selected in the User Interface
 
-    LATC = 0x00;
-    TRISC = 0xD7;
-    ANSELC = 0xC0;
+    // GO_nDONE stop; ADON enabled; CHS AN0; 
+    ADCON0 = 0x01;
 
-    INTCON2bits.nRBPU = 0x01;
+    // PVCFG VDD; TRIGSEL CCP5; NVCFG VSS; 
+    ADCON1 = 0x00;
 
-    // enable interrupt-on-change individually    
-    IOCB5 = 1;
+    // ADFM left; ADCS FOSC/2; ACQT 0; 
+    ADCON2 = 0x00;
 
-    // enable interrupt-on-change globally
-    INTCONbits.RBIE = 1;
+    // ADRESL 0x0; 
+    ADRESL = 0x00;
+
+    // ADRESH 0x0; 
+    ADRESH = 0x00;
 
 }
 
-void PIN_MANAGER_IOC(void) {
-    if ((IOCB5 == 1) && (RBIF == 1)) {
-        //@TODO Add handling code for IOC on pin RB5
+void ADC_StartConversion(adc_channel_t channel) {
+    // select the A/D channel
+    ADCON0bits.CHS = channel;
 
-        // clear interrupt-on-change flag
-        RBIF = 0;
+    // Turn on the ADC module
+    ADCON0bits.ADON = 1;
+
+
+    // Start the conversion
+    ADCON0bits.GO_nDONE = 1;
+}
+
+bool ADC_IsConversionDone() {
+    // Start the conversion
+    return (!ADCON0bits.GO_nDONE);
+}
+
+adc_result_t ADC_GetConversionResult(void) {
+    // Conversion finished, return the result
+    return ((ADRESH << 8) + ADRESL);
+}
+
+adc_result_t ADC_GetConversion(adc_channel_t channel) {
+    // Select the A/D channel
+    ADCON0bits.CHS = channel;
+
+    // Turn on the ADC module
+    ADCON0bits.ADON = 1;
+
+
+    // Start the conversion
+    ADCON0bits.GO_nDONE = 1;
+
+    // Wait for the conversion to finish
+    while (ADCON0bits.GO_nDONE) {
     }
+
+    // Conversion finished, return the result
+    return ((ADRESH << 8) + ADRESL);
 }
 /**
  End of File

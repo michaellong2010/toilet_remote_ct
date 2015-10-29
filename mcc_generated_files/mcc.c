@@ -115,6 +115,7 @@ void SYSTEM_Initialize(void) {
     INTERRUPT_Initialize();
     SPI1_Initialize();
     TMR0_Initialize();
+    ADC_Initialize();
 }
 
 void OSCILLATOR_Initialize(void) {

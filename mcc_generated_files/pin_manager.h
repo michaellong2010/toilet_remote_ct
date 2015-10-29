@@ -59,6 +59,62 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define PULL_UP_ENABLED      1
 #define PULL_UP_DISABLED     0
 
+// get/set channel_AN0 aliases
+#define channel_AN0_TRIS               TRISA0
+#define channel_AN0_LAT                LATA0
+#define channel_AN0_PORT               PORTAbits.RA0
+#define channel_AN0_ANS                ANSA0
+#define channel_AN0_SetHigh()    do { LATA0 = 1; } while(0)
+#define channel_AN0_SetLow()   do { LATA0 = 0; } while(0)
+#define channel_AN0_Toggle()   do { LATA0 = ~LATA0; } while(0)
+#define channel_AN0_GetValue()         PORTAbits.RA0
+#define channel_AN0_SetDigitalInput()    do { TRISA0 = 1; } while(0)
+#define channel_AN0_SetDigitalOutput()   do { TRISA0 = 0; } while(0)
+
+#define channel_AN0_SetAnalogMode()   do { ANSA0 = 1; } while(0)
+#define channel_AN0_SetDigitalMode()   do { ANSA0 = 0; } while(0)
+// get/set channel_AN1 aliases
+#define channel_AN1_TRIS               TRISA1
+#define channel_AN1_LAT                LATA1
+#define channel_AN1_PORT               PORTAbits.RA1
+#define channel_AN1_ANS                ANSA1
+#define channel_AN1_SetHigh()    do { LATA1 = 1; } while(0)
+#define channel_AN1_SetLow()   do { LATA1 = 0; } while(0)
+#define channel_AN1_Toggle()   do { LATA1 = ~LATA1; } while(0)
+#define channel_AN1_GetValue()         PORTAbits.RA1
+#define channel_AN1_SetDigitalInput()    do { TRISA1 = 1; } while(0)
+#define channel_AN1_SetDigitalOutput()   do { TRISA1 = 0; } while(0)
+
+#define channel_AN1_SetAnalogMode()   do { ANSA1 = 1; } while(0)
+#define channel_AN1_SetDigitalMode()   do { ANSA1 = 0; } while(0)
+// get/set channel_AN2 aliases
+#define channel_AN2_TRIS               TRISA2
+#define channel_AN2_LAT                LATA2
+#define channel_AN2_PORT               PORTAbits.RA2
+#define channel_AN2_ANS                ANSA2
+#define channel_AN2_SetHigh()    do { LATA2 = 1; } while(0)
+#define channel_AN2_SetLow()   do { LATA2 = 0; } while(0)
+#define channel_AN2_Toggle()   do { LATA2 = ~LATA2; } while(0)
+#define channel_AN2_GetValue()         PORTAbits.RA2
+#define channel_AN2_SetDigitalInput()    do { TRISA2 = 1; } while(0)
+#define channel_AN2_SetDigitalOutput()   do { TRISA2 = 0; } while(0)
+
+#define channel_AN2_SetAnalogMode()   do { ANSA2 = 1; } while(0)
+#define channel_AN2_SetDigitalMode()   do { ANSA2 = 0; } while(0)
+// get/set channel_AN3 aliases
+#define channel_AN3_TRIS               TRISA3
+#define channel_AN3_LAT                LATA3
+#define channel_AN3_PORT               PORTAbits.RA3
+#define channel_AN3_ANS                ANSA3
+#define channel_AN3_SetHigh()    do { LATA3 = 1; } while(0)
+#define channel_AN3_SetLow()   do { LATA3 = 0; } while(0)
+#define channel_AN3_Toggle()   do { LATA3 = ~LATA3; } while(0)
+#define channel_AN3_GetValue()         PORTAbits.RA3
+#define channel_AN3_SetDigitalInput()    do { TRISA3 = 1; } while(0)
+#define channel_AN3_SetDigitalOutput()   do { TRISA3 = 0; } while(0)
+
+#define channel_AN3_SetAnalogMode()   do { ANSA3 = 1; } while(0)
+#define channel_AN3_SetDigitalMode()   do { ANSA3 = 0; } while(0)
 // get/set key_scan_in1 aliases
 #define key_scan_in1_TRIS               TRISA4
 #define key_scan_in1_LAT                LATA4
@@ -106,6 +162,40 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define key_scan_in3_SetDigitalInput()    do { TRISA7 = 1; } while(0)
 #define key_scan_in3_SetDigitalOutput()   do { TRISA7 = 0; } while(0)
 
+// get/set env_temp_en aliases
+#define env_temp_en_TRIS               TRISB3
+#define env_temp_en_LAT                LATB3
+#define env_temp_en_PORT               PORTBbits.RB3
+#define env_temp_en_WPU                WPUB3
+#define env_temp_en_ANS                ANSB3
+#define env_temp_en_SetHigh()    do { LATB3 = 1; } while(0)
+#define env_temp_en_SetLow()   do { LATB3 = 0; } while(0)
+#define env_temp_en_Toggle()   do { LATB3 = ~LATB3; } while(0)
+#define env_temp_en_GetValue()         PORTBbits.RB3
+#define env_temp_en_SetDigitalInput()    do { TRISB3 = 1; } while(0)
+#define env_temp_en_SetDigitalOutput()   do { TRISB3 = 0; } while(0)
+
+#define env_temp_en_SetPullup()    do { WPUB3 = 1; } while(0)
+#define env_temp_en_ResetPullup()   do { WPUB3 = 0; } while(0)
+#define env_temp_en_SetAnalogMode()   do { ANSB3 = 1; } while(0)
+#define env_temp_en_SetDigitalMode()   do { ANSB3 = 0; } while(0)
+// get/set IO_RB4 aliases
+#define IO_RB4_TRIS               TRISB4
+#define IO_RB4_LAT                LATB4
+#define IO_RB4_PORT               PORTBbits.RB4
+#define IO_RB4_WPU                WPUB4
+#define IO_RB4_ANS                ANSB4
+#define IO_RB4_SetHigh()    do { LATB4 = 1; } while(0)
+#define IO_RB4_SetLow()   do { LATB4 = 0; } while(0)
+#define IO_RB4_Toggle()   do { LATB4 = ~LATB4; } while(0)
+#define IO_RB4_GetValue()         PORTBbits.RB4
+#define IO_RB4_SetDigitalInput()    do { TRISB4 = 1; } while(0)
+#define IO_RB4_SetDigitalOutput()   do { TRISB4 = 0; } while(0)
+
+#define IO_RB4_SetPullup()    do { WPUB4 = 1; } while(0)
+#define IO_RB4_ResetPullup()   do { WPUB4 = 0; } while(0)
+#define IO_RB4_SetAnalogMode()   do { ANSB4 = 1; } while(0)
+#define IO_RB4_SetDigitalMode()   do { ANSB4 = 0; } while(0)
 // get/set rocker_lock aliases
 #define rocker_lock_TRIS               TRISB5
 #define rocker_lock_LAT                LATB5
@@ -145,20 +235,20 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define key_scan_out2_SetDigitalInput()    do { TRISC1 = 1; } while(0)
 #define key_scan_out2_SetDigitalOutput()   do { TRISC1 = 0; } while(0)
 
-// get/set IO_RC2 aliases
-#define IO_RC2_TRIS               TRISC2
-#define IO_RC2_LAT                LATC2
-#define IO_RC2_PORT               PORTCbits.RC2
-#define IO_RC2_ANS                ANSC2
-#define IO_RC2_SetHigh()    do { LATC2 = 1; } while(0)
-#define IO_RC2_SetLow()   do { LATC2 = 0; } while(0)
-#define IO_RC2_Toggle()   do { LATC2 = ~LATC2; } while(0)
-#define IO_RC2_GetValue()         PORTCbits.RC2
-#define IO_RC2_SetDigitalInput()    do { TRISC2 = 1; } while(0)
-#define IO_RC2_SetDigitalOutput()   do { TRISC2 = 0; } while(0)
+// get/set key_scan_out3 aliases
+#define key_scan_out3_TRIS               TRISC2
+#define key_scan_out3_LAT                LATC2
+#define key_scan_out3_PORT               PORTCbits.RC2
+#define key_scan_out3_ANS                ANSC2
+#define key_scan_out3_SetHigh()    do { LATC2 = 1; } while(0)
+#define key_scan_out3_SetLow()   do { LATC2 = 0; } while(0)
+#define key_scan_out3_Toggle()   do { LATC2 = ~LATC2; } while(0)
+#define key_scan_out3_GetValue()         PORTCbits.RC2
+#define key_scan_out3_SetDigitalInput()    do { TRISC2 = 1; } while(0)
+#define key_scan_out3_SetDigitalOutput()   do { TRISC2 = 0; } while(0)
 
-#define IO_RC2_SetAnalogMode()   do { ANSC2 = 1; } while(0)
-#define IO_RC2_SetDigitalMode()   do { ANSC2 = 0; } while(0)
+#define key_scan_out3_SetAnalogMode()   do { ANSC2 = 1; } while(0)
+#define key_scan_out3_SetDigitalMode()   do { ANSC2 = 0; } while(0)
 // get/set SCK1 aliases
 #define SCK1_TRIS               TRISC3
 #define SCK1_LAT                LATC3
