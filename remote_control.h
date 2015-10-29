@@ -23,12 +23,43 @@ extern "C" {
 #define SW5_stop_all 4
 #define SW6_decrease 5
 #define SW7_increase 6
-#define SW8_blowing 7
+#define SW8_fan_speed_temp 7
 
+#define FAN_OFF 0
+#define FAN_ON 1
+#define INCREASE_LEVEL 0
+#define DECREASE_LEVEL 1
+#define LEVEL_DIR_MASK ( 1 << 7 )
 typedef enum {
-    TOIET_DUMMY_STATE = 0
-    } TOIET_STATE;
-    
+    TOIET_DUMMY_STATE,
+    TOIET_WATER_TEMP_STATE,
+    TOIET_SEAT_TEMP_STATE,
+    TOIET_WASHING_STATE,
+    TOIET_SPRAYING_STATE,
+    TOIET_FAN_SPEED_TEMP_STATE
+} TOIET_STATE;
+uint16_t key_scanning ( void );
+void issue_key_scanning ( void );
+void toilet_state_action ( void );
+
+uint8_t water_T_level [] = { 'N', 35, 37, 39 };
+uint8_t toilet_seat_T_level [] = { 'N', 35, 37, 39 };
+uint8_t fan_T_S_level [][4] = { 'N', 40, 45, 50,  //fan speed1 temperature
+                                   'N', 40, 45, 50 };  //fan speed2 temperature
+uint8_t washing_F_level [] = { 'N', 1, 2, 3, 4, 5 };  //washing force level
+uint8_t spraying_F_level [] = { 'N', 1, 2, 3 };
+typedef struct {
+    uint8_t water_T_index;  //water temperature
+    uint8_t toilet_seat_T_index;  //toilet seat temperature
+    uint8_t fan_on_off;
+    uint8_t fan_S_index;  //fan speed & volume
+    uint8_t fan_T_index;  //fan temperature
+    uint8_t washing_F_index;  //washing force level
+    uint8_t spraying_F_index;
+} Toilet_Ctl_Data_t;
+Toilet_Ctl_Data_t toilet_ctrl_data = { 0, 0, FAN_OFF, 0, 0, 0, 0 };
+extern volatile TOIET_STATE toilet_cur_state,toilet_last_state, toilet_next_state;
+        
 #ifdef	__cplusplus
 }
 #endif

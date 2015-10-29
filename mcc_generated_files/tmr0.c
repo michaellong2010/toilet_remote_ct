@@ -1,21 +1,21 @@
 /**
-  Generated Pin Manager File
+  TMR0 Generated Driver File
 
-  Company:
+  @Company
     Microchip Technology Inc.
 
-  File Name:
-    pin_manager.c
+  @File Name
+    tmr0.c
 
-  Summary:
-    This is the Pin Manager file generated using MPLAB?Code Configurator
+  @Summary
+    This is the generated driver implementation file for the TMR0 driver using MPLAB?Code Configurator
 
-  Description:
-    This header file provides implementations for pin APIs for all pins selected in the GUI.
+  @Description
+    This source file provides APIs for TMR0.
     Generation Information :
         Product Revision  :  MPLAB?Code Configurator - v2.25.2
         Device            :  PIC18F25K22
-        Driver Version    :  1.02
+        Driver Version    :  2.00
     The generated drivers are tested against the following:
         Compiler          :  XC8 v1.34
         MPLAB             :  MPLAB X v2.35 or v3.00
@@ -44,42 +44,78 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 (INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
  */
 
+/**
+  Section: Included Files
+ */
+
 #include <xc.h>
-#include "pin_manager.h"
+#include "tmr0.h"
 
-void PIN_MANAGER_Initialize(void) {
-    LATA = 0x20;
-    TRISA = 0xDF;
-    ANSELA = 0x0F;
+/**
+  Section: Global Variables Definitions
+ */
+volatile uint8_t timer0ReloadVal8bit;
 
-    LATB = 0x00;
-    TRISB = 0xFF;
-    ANSELB = 0x1F;
-    WPUB = 0x00;
+/**
+  Section: TMR0 APIs
+ */
 
-    LATC = 0x00;
-    TRISC = 0xD7;
-    ANSELC = 0xC0;
 
-    INTCON2bits.nRBPU = 0x01;
+void TMR0_Initialize(void) {
+    // Set TMR0 to the options selected in the User Interface
 
-    // enable interrupt-on-change individually    
-    IOCB5 = 1;
+    // TMR0ON enabled; T0SE Increment_hi_lo; PSA not_assigned; T0CS FOSC/4; T08BIT 8-bit; T0PS 1:256; 
+    T0CON = 0xDF;
 
-    // enable interrupt-on-change globally
-    INTCONbits.RBIE = 1;
+    // TMR0H 0; 
+    TMR0H = 0x00;
 
+    // TMR0L 0; 
+    TMR0L = 0x00;
+
+    // Load TMR0 value to the 8-bit reload variable
+    timer0ReloadVal8bit = 0;
+
+    // Clearing IF flag.
+    INTCONbits.TMR0IF = 0;
+
+    // Start TMR0
+    TMR0_StartTimer();
 }
 
-void PIN_MANAGER_IOC(void) {
-    if ((IOCB5 == 1) && (RBIF == 1)) {
-        //@TODO Add handling code for IOC on pin RB5
+void TMR0_StartTimer(void) {
+    // Start the Timer by writing to TMR0ON bit
+    T0CONbits.TMR0ON = 1;
+}
 
-        rocker_lock_Toggle ();
-        // clear interrupt-on-change flag
-        RBIF = 0;
-    }
+void TMR0_StopTimer(void) {
+    // Stop the Timer by writing to TMR0ON bit
+    T0CONbits.TMR0ON = 0;
+}
+
+uint8_t TMR0_Read8bitTimer(void) {
+    uint8_t readVal;
+
+    // read Timer0, low register only
+    readVal = TMR0L;
+
+    return readVal;
+}
+
+void TMR0_Write8bitTimer(uint8_t timerVal) {
+    // Write to the Timer0 registers, low register only
+    TMR0L = timerVal;
+}
+
+void TMR0_Reload8bit(void) {
+    //Write to the Timer0 register
+    TMR0L = timer0ReloadVal8bit;
+}
+
+bool TMR0_HasOverflowOccured(void) {
+    // check if  overflow has occurred by checking the TMRIF bit
+    return (INTCONbits.TMR0IF);
 }
 /**
- End of File
+  End of File
  */

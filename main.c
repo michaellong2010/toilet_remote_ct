@@ -9,6 +9,7 @@
 #include <xc.h>
 #include <stdio.h>
 #include "A7105reg.h"
+#include "remote_control.h"
 
 
 //#define DBG_PRINTF printf
@@ -16,6 +17,8 @@
 void main(void) {
     //initRF ();
     //DBG_PRINTF ( "this is a test\n" );
-    while (1);
+    //TMR0_StartTimer ();
+    while (1)
+        toilet_state_action ();
     return;
 }

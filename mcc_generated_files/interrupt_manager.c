@@ -48,6 +48,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 #include "interrupt_manager.h"
 #include "mcc.h"
+#include "..\remote_control.h"
 
 void INTERRUPT_Initialize(void) {
     // Disable Interrupt Priority Vectors (16CXXX Compatibility Mode)
@@ -66,9 +67,15 @@ void interrupt INTERRUPT_InterruptManager(void) {
 
         // clear global interrupt-on-change flag
         INTCONbits.RBIF = 0;
-    } else {
+    } 
+    else
+        if (INTCONbits.TMR0IE == 1 && INTCONbits.TMR0IF == 1) {
+            issue_key_scanning ( );
+            INTCONbits.TMR0IF = 0;
+        }
+        else {
         //Unhandled Interrupt
-    }
+        }
 }
 
 /**

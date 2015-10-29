@@ -52,6 +52,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include <stdbool.h>
 #include "interrupt_manager.h"
 #include "spi1.h"
+#include "tmr0.h"
 
 #define _XTAL_FREQ  1000000
 

@@ -114,6 +114,7 @@ void SYSTEM_Initialize(void) {
     PIN_MANAGER_Initialize();
     INTERRUPT_Initialize();
     SPI1_Initialize();
+    TMR0_Initialize();
 }
 
 void OSCILLATOR_Initialize(void) {
