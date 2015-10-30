@@ -16,6 +16,7 @@ extern "C" {
 #include "mcc_generated_files/pin_manager.h"
 #include "stdint.h"
 #include "mcc_generated_files/adc.h"
+#include "mcc_generated_files/i2c2.h"    
 //switch button
 #define SW1_water_tank_temp 0
 #define SW2_toilet_seat_temp 1
@@ -31,6 +32,20 @@ extern "C" {
 #define INCREASE_LEVEL 0
 #define DECREASE_LEVEL 1
 #define LEVEL_DIR_MASK ( 1 << 7 )
+ 
+ //LCD display backlight
+#define DISPLAY_ON() backlight_SetHigh()
+#define DISPLAY_OFF() backlight_SetLow()
+#define DISPLAY_OFF_IDLE_SECONDS 10
+#define DISPLAY_OFF_TIMER_OVERFLOW_COUNT ( 1000 * DISPLAY_OFF_IDLE_SECONDS ) / 256
+#define I2C_HT16C21_ADDRESS ( 0x70 >> 1 )
+#define I2C_HT16C21_CMD_DRIVE_MODE 0x82
+#define I2C_HT16C21_CMD_SYSTEM_MODE 0x84
+#define I2C_HT16C21_CMD_FRAME_RATE 0x86
+#define DUTY_BIT_POS 1
+#define BIAS_BIT_POS 0
+#define SYSOSC_BIT_POS 1
+#define LCD_BIT_POS 0    
 typedef enum {
     TOIET_DUMMY_STATE,
     TOIET_WATER_TEMP_STATE,
@@ -63,9 +78,10 @@ extern volatile uint8_t lock;
 extern double Env_T;  //enviroment temperature;
 
 uint16_t key_scanning ( void );
-void issue_key_scanning ( void );
+void issue_key_scanning ( void );  //ISR for timer overflow,currently overflow period about 256ms
 void toilet_state_action ( void );
 uint8_t transmit_remote_data ( Toilet_Ctl_Data_t toilet_data );  //transmit toilet control data to host via RF 
+void remote_control_init ( void );
 
 #ifdef	__cplusplus
 }

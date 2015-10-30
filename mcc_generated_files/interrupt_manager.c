@@ -8,14 +8,14 @@
     interrupt_manager.c
 
   @Summary:
-    This is the Interrupt Manager file generated using MPLAB® Code Configurator
+    This is the Interrupt Manager file generated using MPLAB?Code Configurator
 
   @Description:
     This header file provides implementations for global interrupt handling.
     For individual peripheral handlers please see the peripheral driver for
     all modules selected in the GUI.
     Generation Information :
-        Product Revision  :  MPLAB® Code Configurator - v2.25.2
+        Product Revision  :  MPLAB?Code Configurator - v2.25.2
         Device            :  PIC18F25K22
         Driver Version    :  1.02
     The generated drivers are tested against the following:
@@ -48,7 +48,6 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 #include "interrupt_manager.h"
 #include "mcc.h"
-#include "..\remote_control.h"
 
 void INTERRUPT_Initialize(void) {
     // Disable Interrupt Priority Vectors (16CXXX Compatibility Mode)
@@ -58,6 +57,10 @@ void INTERRUPT_Initialize(void) {
 
     // RBI
     INTCON2bits.RBIP = 0;
+    // SSPI
+    IPR3bits.SSP2IP = 0;
+    // BCLI
+    IPR3bits.BCL2IP = 0;
 }
 
 void interrupt INTERRUPT_InterruptManager(void) {
@@ -67,15 +70,13 @@ void interrupt INTERRUPT_InterruptManager(void) {
 
         // clear global interrupt-on-change flag
         INTCONbits.RBIF = 0;
-    } 
-    else
-        if (INTCONbits.TMR0IE == 1 && INTCONbits.TMR0IF == 1) {
-            issue_key_scanning ( );
-            INTCONbits.TMR0IF = 0;
-        }
-        else {
+    } else if (PIE3bits.SSP2IE == 1 && PIR3bits.SSP2IF == 1) {
+        I2C2_ISR();
+    } else if (PIE3bits.BCL2IE == 1 && PIR3bits.BCL2IF == 1) {
+        I2C2_BusCollisionISR();
+    } else {
         //Unhandled Interrupt
-        }
+    }
 }
 
 /**

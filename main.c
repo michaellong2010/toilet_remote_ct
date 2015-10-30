@@ -29,6 +29,7 @@ void main(void) {
     MD5Update (&md5c, (char *)buf, 3);
     MD5Final (digest, &md5c);*/
     
+    remote_control_init ();
     while (1)
         toilet_state_action ();
     return;

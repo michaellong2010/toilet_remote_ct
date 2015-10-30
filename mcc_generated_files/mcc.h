@@ -54,6 +54,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "spi1.h"
 #include "tmr0.h"
 #include "adc.h"
+#include "i2c2.h"
 
 #define _XTAL_FREQ  1000000
 

@@ -162,6 +162,40 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define key_scan_in3_SetDigitalInput()    do { TRISA7 = 1; } while(0)
 #define key_scan_in3_SetDigitalOutput()   do { TRISA7 = 0; } while(0)
 
+// get/set SCL2 aliases
+#define SCL2_TRIS               TRISB1
+#define SCL2_LAT                LATB1
+#define SCL2_PORT               PORTBbits.RB1
+#define SCL2_WPU                WPUB1
+#define SCL2_ANS                ANSB1
+#define SCL2_SetHigh()    do { LATB1 = 1; } while(0)
+#define SCL2_SetLow()   do { LATB1 = 0; } while(0)
+#define SCL2_Toggle()   do { LATB1 = ~LATB1; } while(0)
+#define SCL2_GetValue()         PORTBbits.RB1
+#define SCL2_SetDigitalInput()    do { TRISB1 = 1; } while(0)
+#define SCL2_SetDigitalOutput()   do { TRISB1 = 0; } while(0)
+
+#define SCL2_SetPullup()    do { WPUB1 = 1; } while(0)
+#define SCL2_ResetPullup()   do { WPUB1 = 0; } while(0)
+#define SCL2_SetAnalogMode()   do { ANSB1 = 1; } while(0)
+#define SCL2_SetDigitalMode()   do { ANSB1 = 0; } while(0)
+// get/set SDA2 aliases
+#define SDA2_TRIS               TRISB2
+#define SDA2_LAT                LATB2
+#define SDA2_PORT               PORTBbits.RB2
+#define SDA2_WPU                WPUB2
+#define SDA2_ANS                ANSB2
+#define SDA2_SetHigh()    do { LATB2 = 1; } while(0)
+#define SDA2_SetLow()   do { LATB2 = 0; } while(0)
+#define SDA2_Toggle()   do { LATB2 = ~LATB2; } while(0)
+#define SDA2_GetValue()         PORTBbits.RB2
+#define SDA2_SetDigitalInput()    do { TRISB2 = 1; } while(0)
+#define SDA2_SetDigitalOutput()   do { TRISB2 = 0; } while(0)
+
+#define SDA2_SetPullup()    do { WPUB2 = 1; } while(0)
+#define SDA2_ResetPullup()   do { WPUB2 = 0; } while(0)
+#define SDA2_SetAnalogMode()   do { ANSB2 = 1; } while(0)
+#define SDA2_SetDigitalMode()   do { ANSB2 = 0; } while(0)
 // get/set env_temp_en aliases
 #define env_temp_en_TRIS               TRISB3
 #define env_temp_en_LAT                LATB3
@@ -179,23 +213,23 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define env_temp_en_ResetPullup()   do { WPUB3 = 0; } while(0)
 #define env_temp_en_SetAnalogMode()   do { ANSB3 = 1; } while(0)
 #define env_temp_en_SetDigitalMode()   do { ANSB3 = 0; } while(0)
-// get/set IO_RB4 aliases
-#define IO_RB4_TRIS               TRISB4
-#define IO_RB4_LAT                LATB4
-#define IO_RB4_PORT               PORTBbits.RB4
-#define IO_RB4_WPU                WPUB4
-#define IO_RB4_ANS                ANSB4
-#define IO_RB4_SetHigh()    do { LATB4 = 1; } while(0)
-#define IO_RB4_SetLow()   do { LATB4 = 0; } while(0)
-#define IO_RB4_Toggle()   do { LATB4 = ~LATB4; } while(0)
-#define IO_RB4_GetValue()         PORTBbits.RB4
-#define IO_RB4_SetDigitalInput()    do { TRISB4 = 1; } while(0)
-#define IO_RB4_SetDigitalOutput()   do { TRISB4 = 0; } while(0)
+// get/set backlight aliases
+#define backlight_TRIS               TRISB4
+#define backlight_LAT                LATB4
+#define backlight_PORT               PORTBbits.RB4
+#define backlight_WPU                WPUB4
+#define backlight_ANS                ANSB4
+#define backlight_SetHigh()    do { LATB4 = 1; } while(0)
+#define backlight_SetLow()   do { LATB4 = 0; } while(0)
+#define backlight_Toggle()   do { LATB4 = ~LATB4; } while(0)
+#define backlight_GetValue()         PORTBbits.RB4
+#define backlight_SetDigitalInput()    do { TRISB4 = 1; } while(0)
+#define backlight_SetDigitalOutput()   do { TRISB4 = 0; } while(0)
 
-#define IO_RB4_SetPullup()    do { WPUB4 = 1; } while(0)
-#define IO_RB4_ResetPullup()   do { WPUB4 = 0; } while(0)
-#define IO_RB4_SetAnalogMode()   do { ANSB4 = 1; } while(0)
-#define IO_RB4_SetDigitalMode()   do { ANSB4 = 0; } while(0)
+#define backlight_SetPullup()    do { WPUB4 = 1; } while(0)
+#define backlight_ResetPullup()   do { WPUB4 = 0; } while(0)
+#define backlight_SetAnalogMode()   do { ANSB4 = 1; } while(0)
+#define backlight_SetDigitalMode()   do { ANSB4 = 0; } while(0)
 // get/set rocker_lock aliases
 #define rocker_lock_TRIS               TRISB5
 #define rocker_lock_LAT                LATB5

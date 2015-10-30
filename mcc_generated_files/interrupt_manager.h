@@ -8,14 +8,14 @@
     interrupt_manager.h
 
   @Summary:
-    This is the Interrupt Manager file generated using MPLAB® Code Configurator
+    This is the Interrupt Manager file generated using MPLAB?Code Configurator
 
   @Description:
     This header file provides implementations for global interrupt handling.
     For individual peripheral handlers please see the peripheral driver for
     all modules selected in the GUI.
     Generation Information :
-        Product Revision  :  MPLAB® Code Configurator - v2.25.2
+        Product Revision  :  MPLAB?Code Configurator - v2.25.2
         Device            :  PIC18F25K22
         Driver Version    :  1.01
     The generated drivers are tested against the following:

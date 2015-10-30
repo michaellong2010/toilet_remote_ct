@@ -50,15 +50,23 @@ void toggle_lock ( void ) {
 /* timer ISR to issue key scanning */
 void issue_key_scanning ( void ) {
     //static TOIET_STATE toilet_cur_state = TOIET_DUMMY_STATE, toilet_last_state, toilet_next_state;
-    static uint16_t newest_press_key = 0;
+    static uint16_t newest_press_key = 0, n_timer_ov_count = 0;
    
    //if ( toilet_last_state != toilet_cur_state )
         //toilet_last_state = toilet_cur_state;
     //toilet_next_state = toilet_cur_state;
     newest_press_key = key_scanning ();
     
-    if ( !newest_press_key )
+    if ( !newest_press_key ) {
+        n_timer_ov_count++;
+        if ( n_timer_ov_count == DISPLAY_OFF_TIMER_OVERFLOW_COUNT )
+            DISPLAY_OFF ();
         return;
+    }
+    else {
+        DISPLAY_ON ();
+        n_timer_ov_count = 0;
+    }
     if ( toilet_cur_state  <= TOIET_FAN_SPEED_TEMP_STATE ) {
 
             if ( newest_press_key & ( 1 << SW1_water_tank_temp ) ) {
@@ -227,4 +235,27 @@ uint16_t key_scanning ( void ) {
         press_key = 1 << SW6_decrease;
  
     return press_key;
+}
+
+void remote_control_init ( void )
+{
+    /*void I2C2_MasterWrite(
+            uint8_t *pdata,
+            uint8_t length,
+            uint16_t address,
+            I2C2_MESSAGE_STATUS *pstatus);*/
+    uint8_t i2c_data [ 10 ];
+    I2C2_MESSAGE_STATUS i2c_status = I2C2_MESSAGE_COMPLETE;
+            
+    i2c_data [ 0 ] = I2C_HT16C21_CMD_DRIVE_MODE;
+    i2c_data [ 1 ] &= 0xFC;  //1/4 duty, 1/3 bias
+    I2C2_MasterWrite ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
+    
+    i2c_data [ 0 ] = I2C_HT16C21_CMD_SYSTEM_MODE;
+    i2c_data [ 1 ] &= 0xFC;  //system osc & lcd on/off
+    I2C2_MasterWrite ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
+    
+    i2c_data [ 0 ] = I2C_HT16C21_CMD_FRAME_RATE;
+    i2c_data [ 1 ] &= 0xFD;  //setting frame rate
+    I2C2_MasterWrite ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
 }
