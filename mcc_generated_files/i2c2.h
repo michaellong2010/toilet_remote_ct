@@ -8,12 +8,12 @@
     i2c2.h
 
   @Summary
-    This is the generated header file for the I2C2 driver using MPLAB® Code Configurator
+    This is the generated header file for the I2C2 driver using MPLAB?Code Configurator
 
   @Description
     This header file provides APIs for driver for I2C2.
     Generation Information :
-        Product Revision  :  MPLAB® Code Configurator - v2.25.2
+        Product Revision  :  MPLAB?Code Configurator - v2.25.2
         Device            :  PIC18F25K22
         Driver Version    :  2.00
     The generated drivers are tested against the following:

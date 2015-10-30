@@ -1,6 +1,8 @@
 
 #include "remote_control.h"
 #include <stdbool.h>
+//define macro for debug use
+#define debug_HT16C21 1
 
 volatile TOIET_STATE toilet_cur_state = TOIET_DUMMY_STATE,toilet_last_state = TOIET_DUMMY_STATE, toilet_next_state = TOIET_DUMMY_STATE;
 volatile uint8_t lock = 0;
@@ -237,6 +239,14 @@ uint16_t key_scanning ( void ) {
     return press_key;
 }
 
+#ifdef debug_HT16C21
+void I2C2_check_error ( I2C2_MESSAGE_STATUS status )
+{
+  if ( status > I2C2_MESSAGE_COMPLETE )
+	  while ( 1 );
+}
+#endif
+
 void remote_control_init ( void )
 {
     /*void I2C2_MasterWrite(
@@ -244,18 +254,33 @@ void remote_control_init ( void )
             uint8_t length,
             uint16_t address,
             I2C2_MESSAGE_STATUS *pstatus);*/
-    uint8_t i2c_data [ 10 ];
+    uint8_t i2c_data [ 10 ], i = 0;
     I2C2_MESSAGE_STATUS i2c_status = I2C2_MESSAGE_COMPLETE;
             
     i2c_data [ 0 ] = I2C_HT16C21_CMD_DRIVE_MODE;
     i2c_data [ 1 ] &= 0xFC;  //1/4 duty, 1/3 bias
     I2C2_MasterWrite ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
+#ifdef debug_HT16C21
+	I2C2_check_error ( i2c_status );
+#endif
     
     i2c_data [ 0 ] = I2C_HT16C21_CMD_SYSTEM_MODE;
     i2c_data [ 1 ] &= 0xFC;  //system osc & lcd on/off
     I2C2_MasterWrite ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
-    
+#ifdef debug_HT16C21
+	I2C2_check_error ( i2c_status );
+#endif
+
     i2c_data [ 0 ] = I2C_HT16C21_CMD_FRAME_RATE;
-    i2c_data [ 1 ] &= 0xFD;  //setting frame rate
+    i2c_data [ 1 ] &= 0xFE;  //setting frame rate 80Hz
     I2C2_MasterWrite ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
+#ifdef debug_HT16C21
+	I2C2_check_error ( i2c_status );
+#endif
+
+	//set whole RAM map as 1
+	i2c_data [ 0 ] = I2C_HT16C21_CMD_FRAME_RATE;
+	for ( i = 0; i < 10; i++ ) {
+	
+	}
 }
