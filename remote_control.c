@@ -91,7 +91,7 @@ void toggle_lock ( void ) {
 /* timer ISR to issue key scanning */
 void issue_key_scanning ( void ) {
     //static TOIET_STATE toilet_cur_state = TOIET_DUMMY_STATE, toilet_last_state, toilet_next_state;
-    static uint16_t newest_press_key = 0, n_timer_ov_count = 0;
+    static uint16_t newest_press_key = 0, n_timer_off_count = 0;
    
    //if ( toilet_last_state != toilet_cur_state )
         //toilet_last_state = toilet_cur_state;
@@ -99,19 +99,22 @@ void issue_key_scanning ( void ) {
     newest_press_key = key_scanning ();
     
     if ( !newest_press_key ) {
-        if ( n_timer_ov_count <= DISPLAY_OFF_TIMER_OVERFLOW_COUNT ) {
-            n_timer_ov_count++;
+        if ( n_timer_off_count <= DISPLAY_OFF_TIMER_OVERFLOW_COUNT ) {
+            n_timer_off_count++;
         }
         else
-            if ( n_timer_ov_count == DISPLAY_OFF_TIMER_OVERFLOW_COUNT ) {
+            if ( n_timer_off_count == DISPLAY_OFF_TIMER_OVERFLOW_COUNT ) {
                 DISPLAY_OFF ();
             }
         return;
     }
     else {
         DISPLAY_ON ();
-        n_timer_ov_count = 0;
+        n_timer_off_count = 0;
     }
+#ifdef debug_key_scanning
+    newest_press_key = newest_press_key;
+#else
     if ( toilet_cur_state  <= TOIET_FAN_SPEED_TEMP_STATE ) {
 
             if ( newest_press_key & ( 1 << SW1_water_tank_temp ) ) {
@@ -234,7 +237,7 @@ void issue_key_scanning ( void ) {
                                                }
                                        }
     }
-    
+#endif    
     /*if ( toilet_cur_state != toilet_next_state ) {
         toilet_last_state = toilet_cur_state;
         toilet_cur_state = toilet_next_state;
@@ -244,41 +247,98 @@ void issue_key_scanning ( void ) {
 /* do key scanning */
 uint16_t key_scanning ( void ) {    
     uint8_t key_in1, key_in2, key_in3;
-    uint16_t press_key;
+    uint16_t press_key = 0, i = 0, j = 0, Max_Hist;
+	static uint16_t key_buf [ KEY_COUNT ][ KEY_BUFFER_SIZE ], key_buf_head_index = 0, key_buf_tail_index = 0, key_buf_hist [ KEY_COUNT ] = { 0 };
+	int16_t candidate_key_index = -1;
+	static bool is_buf_full = false;
     
     key_scan_out1_SetDigitalOutput ();
-    key_in1 = key_scan_in1_GetValue ();
-    key_in2 = key_scan_in2_GetValue ();
-    key_in3 = key_scan_in3_GetValue ();
+    key_buf [ 0 ][ key_buf_tail_index ] = key_in1 = key_scan_in1_GetValue ();
+    key_buf [ 1 ][ key_buf_tail_index ] = key_in2 = key_scan_in2_GetValue ();
+    key_buf [ 2 ][ key_buf_tail_index ] = key_in3 = key_scan_in3_GetValue ();
     if ( key_in1 )
-        press_key = 1 << SW1_water_tank_temp;
+        press_key |= 1 << SW1_water_tank_temp;
     if ( key_in2 )
-        press_key = 1 << SW4_spraying;
+        press_key |= 1 << SW4_spraying;
     if ( key_in3 )
-        press_key = 1 << SW7_increase;
+        press_key |= 1 << SW7_increase;
     key_scan_out1_SetDigitalInput ();
     
     key_scan_out2_SetDigitalOutput ();
-    key_in1 = key_scan_in1_GetValue ();
-    key_in2 = key_scan_in2_GetValue ();
-    key_in3 = key_scan_in3_GetValue ();
+    key_buf [ 3 ][ key_buf_tail_index ] = key_in1 = key_scan_in1_GetValue ();
+    key_buf [ 4 ][ key_buf_tail_index ] = key_in2 = key_scan_in2_GetValue ();
+    key_buf [ 5 ][ key_buf_tail_index ] = key_in3 = key_scan_in3_GetValue ();
      if ( key_in1 )
-        press_key = 1 << SW2_toilet_seat_temp;
+        press_key |= 1 << SW2_toilet_seat_temp;
     if ( key_in2 )
-        press_key = 1 << SW5_stop_all;
+        press_key |= 1 << SW5_stop_all;
     if ( key_in3 )
-        press_key = 1 << SW8_fan_speed_temp;
+        press_key |= 1 << SW8_fan_speed_temp;
     key_scan_out2_SetDigitalInput ();
     
     key_scan_out3_SetDigitalOutput ();
-    key_in1 = key_scan_in1_GetValue ();
-    key_in2 = key_scan_in2_GetValue ();
+    key_buf [ 6 ][ key_buf_tail_index ] = key_in1 = key_scan_in1_GetValue ();
+    key_buf [ 7 ][ key_buf_tail_index ] = key_in2 = key_scan_in2_GetValue ();
     if ( key_in1 )
-        press_key = 1 << SW3_washing;
+        press_key |= 1 << SW3_washing;
     if ( key_in2 )
-        press_key = 1 << SW6_decrease;
+        press_key |= 1 << SW6_decrease;
     key_scan_out3_SetDigitalInput ();
  
+#ifdef debug_key_scanning
+    press_key = press_key;
+#endif
+	//buffer the key, examine every key histogram
+	if ( key_buf_head_index < key_buf_tail_index ) {
+		if ( ( key_buf_tail_index - key_buf_head_index + 1 ) ==  KEY_BUFFER_SIZE ) {
+			/*for ( i = key_buf_head_index; i <= key_buf_tail_index; i++ ) {
+				for ( j = 0 ; j < KEY_COUNT; j++ )
+					if ( key_buf [ j ][ i ] )
+						key_buf_hist [ j ]++;
+			}*/
+			is_buf_full = true;
+		}
+	}
+	else
+		if ( key_buf_tail_index < key_buf_head_index ) {
+
+		}
+
+	if ( is_buf_full == true ) {
+		for ( i = 0; i < KEY_BUFFER_SIZE; i++ )
+			for ( j = 0 ; j < KEY_COUNT; j++ )
+				if ( key_buf [ j ][ i ] )
+					key_buf_hist [ j ]++;
+    }
+    
+	for ( i = 0, candidate_key_index = -1, Max_Hist = ( uint16_t ) ASSERT_TIMES_THRESHOLD; i < KEY_COUNT; i++ )
+		if ( key_buf_hist [ i ] >= Max_Hist ) {
+			Max_Hist = key_buf_hist [ i ];
+			candidate_key_index = i;
+		}
+	if ( candidate_key_index >= 0 ) {
+#ifdef debug_key_scanning
+    press_key = press_key;
+#endif
+        press_key = 1 << candidate_key_index;
+		memset ( key_buf, 0, sizeof( key_buf ) );
+		memset ( key_buf_hist, 0, sizeof( key_buf_hist ) );
+		key_buf_head_index = key_buf_tail_index = 0;
+		is_buf_full = false;
+	}
+	else {
+		key_buf_tail_index++;
+		if ( is_buf_full == true ) {
+			for ( j = 0 ; j < KEY_COUNT; j++ )
+				if ( key_buf [ j ][ key_buf_head_index ] )
+					key_buf_hist [ j ]--;
+			key_buf_head_index++;
+		}
+		if ( key_buf_tail_index == KEY_BUFFER_SIZE )
+			key_buf_tail_index = 0;
+		if ( key_buf_head_index == KEY_BUFFER_SIZE )
+			key_buf_head_index = 0;
+	}
     return press_key;
 }
 
@@ -369,4 +429,12 @@ void remote_control_init ( void )
     show_display_segment1 ();
     
 	show_display_segment ( DISP_regular, sizeof ( DISP_regular), true );
+    
+    //start timer0
+    TMR0_StartTimer( );
+
+#ifdef debug_A7105_SPI
+    if ( A7105_SpiTest () == true )
+        while ( 1 );
+#endif
 }

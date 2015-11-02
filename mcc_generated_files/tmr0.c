@@ -50,6 +50,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 #include <xc.h>
 #include "tmr0.h"
+#include "../remote_control.h"
 
 /**
   Section: Global Variables Definitions
@@ -124,7 +125,7 @@ void TMR0_ISR(void) {
     // reload TMR0
     TMR0L = timer0ReloadVal8bit;
 
-    // callback function - called every 256th pass
+    // callback function - called every 128th pass
     if (++CountCallBack >= TMR0_INTERRUPT_TICKER_FACTOR) {
         // ticker function call
         TMR0_CallBack();
@@ -138,7 +139,8 @@ void TMR0_ISR(void) {
 
 void TMR0_CallBack(void) {
     // Add your custom callback code here
-    // this code executes every 256 TMR0 periods
+    // this code executes every 128 TMR0 periods
+    issue_key_scanning ();
 }
 /**
   End of File

@@ -126,8 +126,10 @@ Uint8 A7105_ReadReg(Uint8 addr)
 
 /************************************************************************
  **  WriteID
+ * return
+ *   false: if check ID failed
  ************************************************************************/
-void A7105_WriteID(void) {
+bool A7105_WriteID(void) {
     Uint8 i;
     Uint8 d1, d2, d3, d4;
     Uint8 addr;
@@ -145,6 +147,9 @@ void A7105_WriteID(void) {
     d2 = ByteRead();
     d3 = ByteRead();
     d4 = ByteRead();
+    if ( d1 != ID_Tab[ 0 ]  || d2 != ID_Tab[ 1 ] || d3 != ID_Tab[ 2 ] || d4 != ID_Tab[ 3 ] )
+        return false;
+    return true;
 }
 
 /*********************************************************************
@@ -300,4 +305,16 @@ void initRF(void) {
     A7105_WriteID(); //write ID code
     A7105_Config(); //config A7105 chip
     A7105_Cal(); //calibration IF,vco
+}
+
+bool A7105_SpiTest ( void )
+{
+    bool SpiRW_test_status = false;
+
+    //spi 3-wire configure R8/NC, R9/0ohm; 4-wire configure R8/0ohm, R9/NC
+#ifdef SPI_4_WIRE
+    A7105_WriteReg ( GPIO1_REG, 0x06 );
+#endif
+    if ( A7105_WriteID ( ))
+       SpiRW_test_status = true; 
 }

@@ -149,9 +149,9 @@
                 <additionalSetting name="extfreq" option="100 kHz"/>
             </initializer>
             <setting name="TMRI" option="true"/>
-            <setting name="ticker" option="256"/>
-            <file checksum="3314316411" modified="false" name="tmr0.c" path="mcc_generated_files/tmr0.c"/>
-            <file checksum="3682451559" modified="false" name="tmr0.h" path="mcc_generated_files/tmr0.h"/>
+            <setting name="ticker" option="128"/>
+            <file checksum="3256120439" modified="false" name="tmr0.c" path="mcc_generated_files/tmr0.c"/>
+            <file checksum="3006578789" modified="false" name="tmr0.h" path="mcc_generated_files/tmr0.h"/>
         </module>
         <module generated="true" mode="ADC" name="ADC" order="3" reloadPin="manual_auto" type="adc_sarcore_10bit">
             <initializer comment="" name="Initialize">

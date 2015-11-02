@@ -35,12 +35,17 @@ extern "C" {
 #define INCREASE_LEVEL 0
 #define DECREASE_LEVEL 0x80
 #define LEVEL_DIR_MASK ( 1 << 7 )
+
+//for key buffer
+#define KEY_COUNT 8
+#define KEY_BUFFER_SIZE ( 1000 / 131 )
+#define ASSERT_TIMES_THRESHOLD  0.6 * ( 1000 / 131 )
  
- //LCD display backlight
+//LCD display backlight
 #define DISPLAY_ON() backlight_SetHigh()
 #define DISPLAY_OFF() backlight_SetLow()
 #define DISPLAY_OFF_IDLE_SECONDS 15
-#define DISPLAY_OFF_TIMER_OVERFLOW_COUNT ( 1000 * DISPLAY_OFF_IDLE_SECONDS ) / 262
+#define DISPLAY_OFF_TIMER_OVERFLOW_COUNT ( 1000 * DISPLAY_OFF_IDLE_SECONDS ) / 131
 #define I2C_HT16C21_ADDRESS ( 0x70 >> 1 )
 #define I2C_HT16C21_CMD_DISPLAY_DATA 0x80
 #define I2C_HT16C21_CMD_DRIVE_MODE 0x82
@@ -53,6 +58,8 @@ extern "C" {
 
 //define macro for debug use
 #define debug_HT16C21 1  //debug step1
+#define debug_key_scanning 1  //debug ky scan
+#define debug_A7105_SPI 1  //debug A7105 SPI R/W
 typedef enum {
     TOIET_DUMMY_STATE,
     TOIET_WATER_TEMP_STATE,

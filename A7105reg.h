@@ -13,6 +13,7 @@ extern "C" {
 #endif
 
 #include "define.h"
+#include "stdbool.h"
 /********************************************************************
 *   A7102REG.h
 *   RF Chip-A7102 Hardware Definitions
@@ -91,13 +92,14 @@ extern "C" {
 void initRF(void);
 void A7105_Reset(void);
 void A7105_WriteReg(Uint8, Uint8);
-void A7105_WriteID(void);
+bool A7105_WriteID(void);
 void ByteSend(Uint8 src);
 Uint8 ByteRead(void);
 void A7105_Config(void);
 #define StrobeCmd ByteSend
 Uint8 A7105_ReadReg(Uint8 addr);
 void SetCH(Uint8);
+bool A7105_SpiTest ( void );
 
 #ifdef	__cplusplus
 }
