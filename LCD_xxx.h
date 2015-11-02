@@ -1,3 +1,4 @@
+#include <stdint.h>
 //segment bit RAM map
 #define S_1E 1
 #define S_1G 2
@@ -67,31 +68,20 @@
 #define S_6E ( 8*6 + 6 )
 #define S_Y3 ( 8*6 + 7 )
 
-
-#define S_5A ( 8*7 + 0 )
-#define S_5B ( 8*7 + 1 )
-#define S_5C ( 8*7 + 2 )
-#define S_5D ( 8*7 + 3 )
-#define S_6F ( 8*7 + 4 )
-#define S_6G ( 8*7 + 5 )
-#define S_6E ( 8*7 + 6 )
-#define S_Y3 ( 8*7 + 7 )
-
-
-#define S_6A ( 8*8 + 0 )
-#define S_6B ( 8*8 + 1 )
-#define S_6C ( 8*8 + 2 )
-#define S_6D ( 8*8 + 3 )
-#define S_X10 ( 8*8 + 4 )
-#define S_X11 ( 8*8 + 5 )
-#define S_X12 ( 8*8 + 6 )
-#define S_Y4 ( 8*8 + 7 )
+#define S_6A ( 8*7 + 0 )
+#define S_6B ( 8*7 + 1 )
+#define S_6C ( 8*7 + 2 )
+#define S_6D ( 8*7 + 3 )
+#define S_X10 ( 8*7 + 4 )
+#define S_X11 ( 8*7 + 5 )
+#define S_X12 ( 8*7 + 6 )
+#define S_Y4 ( 8*7 + 7 )
 
 
-#define S_OFF ( 8*9 + 0 )
-#define S_Y7 ( 8*9 + 1 )
-#define S_Y8 ( 8*9 + 2 )
-#define S_Y9 ( 8*9 + 3 )
+#define S_OFF ( 8*8 + 0 )
+#define S_Y7 ( 8*8 + 1 )
+#define S_Y8 ( 8*8 + 2 )
+#define S_Y9 ( 8*8 + 3 )
 
 
 //7 seg led map data
@@ -147,6 +137,7 @@ S_4A, S_4B, S_4C, S_4D, S_4E, S_4F, S_4G, //8, clear 7-seg
 S_4A, S_4B, S_4C, S_4F, S_4G, S_4F, S_4C //9
 };
 
+#define Clear_7SEG 8
 uint8_t DISP_7SEG_5 [ ][ 7 ] = {
 S_5A, S_5B, S_5C, S_5D, S_5E, S_5F, S_5E, //0
 S_5B, S_5C, S_5B, S_5C, S_5B, S_5C, S_5B, //1
@@ -173,11 +164,12 @@ S_6A, S_6B, S_6C, S_6D, S_6E, S_6F, S_6G, //8, clear 7-seg
 S_6A, S_6B, S_6C, S_6F, S_6G, S_6F, S_6C //9
 };
 
-//regular seg map data
+//regular segments map data
 uint8_t DISP_regular [] = { S_X8, S_Y5, S_X10, S_X12, S_TEMP };  //clear
 
 //battery power level indicator data with 6 levels
-unit8_t DISP_bat_level [][6] = {
+#define Clear_Bat_Level 5
+uint8_t DISP_bat_level [][6] = {
 S_X7, S_X7, S_X7, S_X7, S_X7, S_X7,  
 S_X7, S_X6, S_X7, S_X6, S_X7, S_X6,
 S_X7, S_X6, S_X5, S_X6, S_X7, S_X6,
@@ -186,17 +178,21 @@ S_X7, S_X6, S_X5, S_X4, S_X3, S_X4,
 S_X7, S_X6, S_X5, S_X4, S_X3, S_X2 //clear battery level
 };
 
-//water¡Bseat¡Bfan temperature level indicator data
-unit8_t DISP_misc_level [][4] = {
+//water&seat&fan&spray temperature level indicator data
+#define Clear_Misc_Level 4
+uint8_t DISP_misc_level [][4] = {
 S_OFF, S_OFF, S_OFF, S_OFF,
-Y7, Y7, Y7, Y7,
-Y7, Y8, Y7, Y8,
-Y7, Y8, Y9, Y8,
-S_OFF, Y7, Y8, Y9
+S_Y7, S_Y7, S_Y7, S_Y7,
+S_Y7, S_Y8, S_Y7, S_Y8,
+S_Y7, S_Y8, S_Y9, S_Y8,
+S_OFF, S_Y7, S_Y8, S_Y9 //clear
 };
 
 #define Seat_Logo 0
 #define Spraying_Logo 1
-uint8_t DISP_mode_logo [] = {
-S_Y3, S_Y4
-}
+#define Clear_All_Logo 2
+uint8_t DISP_mode_logo [][2] = {
+S_Y3, S_Y3,
+S_Y4, S_Y4,
+S_Y3, S_Y4 //clear all logo
+};

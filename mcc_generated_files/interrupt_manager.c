@@ -58,9 +58,11 @@ void INTERRUPT_Initialize(void) {
     // RBI
     INTCON2bits.RBIP = 0;
     // SSPI
-    IPR3bits.SSP2IP = 0;
+    IPR3bits.SSP2IP = 1;
     // BCLI
     IPR3bits.BCL2IP = 0;
+    // TMRI
+    INTCON2bits.TMR0IP = 0;
 }
 
 void interrupt INTERRUPT_InterruptManager(void) {
@@ -74,6 +76,8 @@ void interrupt INTERRUPT_InterruptManager(void) {
         I2C2_ISR();
     } else if (PIE3bits.BCL2IE == 1 && PIR3bits.BCL2IF == 1) {
         I2C2_BusCollisionISR();
+    } else if (INTCONbits.TMR0IE == 1 && INTCONbits.TMR0IF == 1) {
+        TMR0_ISR();
     } else {
         //Unhandled Interrupt
     }

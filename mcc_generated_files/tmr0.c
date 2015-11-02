@@ -76,8 +76,11 @@ void TMR0_Initialize(void) {
     // Load TMR0 value to the 8-bit reload variable
     timer0ReloadVal8bit = 0;
 
-    // Clearing IF flag.
+    // Clear Interrupt flag before enabling the interrupt
     INTCONbits.TMR0IF = 0;
+
+    // Enabling TMR0 interrupt.
+    INTCONbits.TMR0IE = 1;
 
     // Start TMR0
     TMR0_StartTimer();
@@ -112,9 +115,30 @@ void TMR0_Reload8bit(void) {
     TMR0L = timer0ReloadVal8bit;
 }
 
-bool TMR0_HasOverflowOccured(void) {
-    // check if  overflow has occurred by checking the TMRIF bit
-    return (INTCONbits.TMR0IF);
+void TMR0_ISR(void) {
+    static volatile uint16_t CountCallBack = 0;
+
+    // clear the TMR0 interrupt flag
+    INTCONbits.TMR0IF = 0;
+
+    // reload TMR0
+    TMR0L = timer0ReloadVal8bit;
+
+    // callback function - called every 256th pass
+    if (++CountCallBack >= TMR0_INTERRUPT_TICKER_FACTOR) {
+        // ticker function call
+        TMR0_CallBack();
+
+        // reset ticker counter
+        CountCallBack = 0;
+    }
+
+    // add your TMR0 interrupt custom code
+}
+
+void TMR0_CallBack(void) {
+    // Add your custom callback code here
+    // this code executes every 256 TMR0 periods
 }
 /**
   End of File

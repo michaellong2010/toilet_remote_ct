@@ -55,7 +55,7 @@
             <setting name="HFOFST" option="ON"/>
             <setting name="PBADEN" option="ON"/>
             <setting name="CCP3MX" option="PORTB5"/>
-            <setting name="MCLRE" option="INTMCLR"/>
+            <setting name="MCLRE" option="EXTMCLR"/>
             <setting name="T3CMX" option="PORTC0"/>
             <setting name="LVP" option="OFF"/>
             <setting name="STVREN" option="ON"/>
@@ -80,18 +80,19 @@
             <setting name="EBTR0" option="OFF"/>
             <setting name="EBTRB" option="OFF"/>
             <setting name="generateConfigBits" option="true"/>
-            <file checksum="24004393" modified="false" name="mcc.c" path="mcc_generated_files/mcc.c"/>
+            <file checksum="481511559" modified="false" name="mcc.c" path="mcc_generated_files/mcc.c"/>
             <file checksum="2826249339" modified="false" name="mcc.h" path="mcc_generated_files/mcc.h"/>
         </manager>
         <manager generated="true" name="Interrupt Manager" reloadPin="manual">
             <setting name="preemptHigh" option="true"/>
             <setting name="preemptLow" option="true"/>
             <setting name="useIPEN" option="false"/>
-            <file checksum="3629734755" modified="false" name="interrupt_manager.c" path="mcc_generated_files/interrupt_manager.c"/>
+            <file checksum="2661972690" modified="false" name="interrupt_manager.c" path="mcc_generated_files/interrupt_manager.c"/>
             <file checksum="124011081" modified="false" name="interrupt_manager.h" path="mcc_generated_files/interrupt_manager.h"/>
             <interrupt module="Pin Manager" name="RBI" priority="2"/>
             <interrupt module="MSSP2" name="SSPI" priority="2"/>
             <interrupt module="MSSP2" name="BCLI" priority="2"/>
+            <interrupt module="TMR0" name="TMRI" priority="2"/>
         </manager>
     </managers>
     <modules>
@@ -127,8 +128,8 @@
             <resource customName="key_scan_in1" digital="true" direction="INPUT" function="RA4" module="GPIO" name="RA4" start="false" type="pin" wpu="false"/>
             <resource customName="key_scan_in2" digital="true" direction="INPUT" function="RA6" module="GPIO" name="RA6" start="false" type="pin" wpu="false"/>
             <resource customName="key_scan_in3" digital="true" direction="INPUT" function="RA7" module="GPIO" name="RA7" start="false" type="pin" wpu="false"/>
-            <resource customName="key_scan_out1" digital="true" direction="INPUT" function="RC0" module="GPIO" name="RC0" start="false" type="pin" wpu="false"/>
             <resource customName="key_scan_out2" digital="true" direction="INPUT" function="RC1" module="GPIO" name="RC1" start="false" type="pin" wpu="false"/>
+            <resource customName="key_scan_out1" digital="true" direction="INPUT" function="RC0" module="GPIO" name="RC0" start="false" type="pin" wpu="false"/>
             <resource customName="key_scan_out3" digital="true" direction="INPUT" function="RC2" module="GPIO" name="RC2" start="false" type="pin" wpu="false"/>
             <resource customName="env_temp_en" digital="true" direction="INPUT" function="RB3" module="GPIO" name="RB3" start="false" type="pin" wpu="false"/>
             <resource customName="backlight" digital="true" direction="OUTPUT" function="RB4" ioc="0" module="GPIO" name="RB4" start="false" type="pin" wpu="false"/>
@@ -147,10 +148,10 @@
                 <additionalSetting name="timerstart" option="enabled"/>
                 <additionalSetting name="extfreq" option="100 kHz"/>
             </initializer>
-            <setting name="TMRI" option="false"/>
-            <setting name="ticker" option="0"/>
-            <file checksum="3653620505" modified="false" name="tmr0.c" path="mcc_generated_files/tmr0.c"/>
-            <file checksum="820104534" modified="false" name="tmr0.h" path="mcc_generated_files/tmr0.h"/>
+            <setting name="TMRI" option="true"/>
+            <setting name="ticker" option="256"/>
+            <file checksum="3314316411" modified="false" name="tmr0.c" path="mcc_generated_files/tmr0.c"/>
+            <file checksum="3682451559" modified="false" name="tmr0.h" path="mcc_generated_files/tmr0.h"/>
         </module>
         <module generated="true" mode="ADC" name="ADC" order="3" reloadPin="manual_auto" type="adc_sarcore_10bit">
             <initializer comment="" name="Initialize">

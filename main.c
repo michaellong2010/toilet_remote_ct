@@ -29,8 +29,12 @@ void main(void) {
     MD5Update (&md5c, (char *)buf, 3);
     MD5Final (digest, &md5c);*/
     
-    remote_control_init ();
-    while (1)
-        toilet_state_action ();
+    //key_scan_out2_SetDigitalOutput ();
+    //key_scan_out2_SetHigh ();
+    //key_scan_out2_SetLow ();
+    //remote_control_init ();
+    //while (1);
+    /*    toilet_state_action ();*/
+    //show_display_segment ( DISP_mode_logo[Clear_All_Logo], sizeof ( DISP_mode_logo[Clear_All_Logo] ), false );
     return;
 }

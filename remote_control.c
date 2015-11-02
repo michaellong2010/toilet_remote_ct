@@ -1,8 +1,6 @@
 
 #include "remote_control.h"
 #include <stdbool.h>
-//define macro for debug use
-#define debug_HT16C21 1
 
 volatile TOIET_STATE toilet_cur_state = TOIET_DUMMY_STATE,toilet_last_state = TOIET_DUMMY_STATE, toilet_next_state = TOIET_DUMMY_STATE;
 volatile uint8_t lock = 0;
@@ -16,13 +14,46 @@ uint8_t transmit_remote_data ( Toilet_Ctl_Data_t toilet_data ) {
  * pass toilet_ctrl_data to host via RF TX */
 void toilet_state_action ( void ) {
     bool is_need_refresh = false;
+    uint8_t level_index = 0;
     
     if ( toilet_cur_state !=  toilet_next_state) {
         toilet_last_state = toilet_cur_state;
         toilet_cur_state = toilet_next_state;
         toilet_ctrl_data.toilet_state = toilet_cur_state;
         is_need_refresh = true;
+        
+        //clear all logo display
+        show_display_segment ( DISP_mode_logo [ Clear_All_Logo ], sizeof ( DISP_mode_logo [ Clear_All_Logo ] ), false );
+        //display current state logo
+        switch ( toilet_cur_state ) {
+            case TOIET_SPRAYING_STATE:
+                show_display_segment ( DISP_mode_logo [ Seat_Logo ], sizeof ( DISP_mode_logo [ Seat_Logo ] ), true );
+                break;
+            case TOIET_SEAT_TEMP_STATE:
+                show_display_segment ( DISP_mode_logo [ Spraying_Logo ], sizeof ( DISP_mode_logo [ Spraying_Logo ] ), true );
+                break;
+        }
     }
+    //display water&seat&fan&spray temperature level
+    show_display_segment ( DISP_misc_level [ Clear_Misc_Level ], sizeof ( DISP_misc_level [ Clear_Misc_Level ] ), false );
+    switch  ( toilet_cur_state ) {
+        case TOIET_WATER_TEMP_STATE:
+            level_index = toilet_ctrl_data.water_T_index;
+            break;
+        case TOIET_SEAT_TEMP_STATE:
+            level_index = toilet_ctrl_data.toilet_seat_T_index;
+            break;
+        case TOIET_WASHING_STATE:
+            level_index = toilet_ctrl_data.washing_F_index;
+            break;
+        case TOIET_SPRAYING_STATE:
+            level_index = toilet_ctrl_data.spraying_F_index;
+            break;
+        case TOIET_FAN_SPEED_TEMP_STATE:
+            level_index = toilet_ctrl_data.fan_T_index;
+            break;
+    }
+    show_display_segment ( DISP_misc_level [ level_index ], sizeof ( DISP_misc_level [ level_index ] ), true );
     
     if ( toilet_cur_state == TOIET_WASHING_STATE || toilet_cur_state == TOIET_SPRAYING_STATE || toilet_cur_state == TOIET_FAN_SPEED_TEMP_STATE  ) {
         if ( !lock ) {
@@ -40,6 +71,14 @@ void toilet_state_action ( void ) {
     }
     Env_T = (double) ADC_GetConversion( channel_AN2 );
     BAT_voltage1 = (double) ADC_GetConversion( channel_AN3 );
+    
+    /*show_display_segment ( DISP_7SEG_5 [ Clear_7SEG ], sizeof ( DISP_7SEG_5 [ Clear_7SEG ] ), false );
+    show_display_segment ( DISP_7SEG_6 [ Clear_7SEG ], sizeof ( DISP_7SEG_6 [ Clear_7SEG ] ), false );
+    show_display_segment ( DISP_7SEG_5 [ Clear_7SEG ], sizeof ( DISP_7SEG_5 [ Clear_7SEG ] ), true );
+    show_display_segment ( DISP_7SEG_6 [ Clear_7SEG ], sizeof ( DISP_7SEG_6 [ Clear_7SEG ] ), true );
+    
+    show_display_segment ( DISP_bat_level [ Clear_Bat_Level ], sizeof ( DISP_bat_level [ Clear_Bat_Level ] ), false );
+    show_display_segment ( DISP_bat_level [ Clear_Bat_Level ], sizeof ( DISP_bat_level [ Clear_Bat_Level ] ), true );*/
 }
 
 void toggle_lock ( void ) {
@@ -60,9 +99,13 @@ void issue_key_scanning ( void ) {
     newest_press_key = key_scanning ();
     
     if ( !newest_press_key ) {
-        n_timer_ov_count++;
-        if ( n_timer_ov_count == DISPLAY_OFF_TIMER_OVERFLOW_COUNT )
-            DISPLAY_OFF ();
+        if ( n_timer_ov_count <= DISPLAY_OFF_TIMER_OVERFLOW_COUNT ) {
+            n_timer_ov_count++;
+        }
+        else
+            if ( n_timer_ov_count == DISPLAY_OFF_TIMER_OVERFLOW_COUNT ) {
+                DISPLAY_OFF ();
+            }
         return;
     }
     else {
@@ -163,13 +206,13 @@ void issue_key_scanning ( void ) {
                                else
                                    if ( newest_press_key & ( 1 << SW6_decrease ) ) {
                                        if ( toilet_cur_state == TOIET_WASHING_STATE ) {
-                                           if ( toilet_ctrl_data.washing_F_index > 0 )
+                                           if ( toilet_ctrl_data.washing_F_index > 1 )
                                                toilet_ctrl_data.washing_F_index--;
                                        }
                                        else
                                            if ( toilet_cur_state == TOIET_FAN_SPEED_TEMP_STATE ) {
                                              //toggle fan speed
-                                               if (toilet_ctrl_data.fan_S_index)
+                                               if ( toilet_ctrl_data.fan_S_index )
                                                    toilet_ctrl_data.fan_S_index = 0;
                                                else
                                                    toilet_ctrl_data.fan_S_index = 1;
@@ -184,7 +227,7 @@ void issue_key_scanning ( void ) {
                                            else
                                                if ( toilet_cur_state == TOIET_FAN_SPEED_TEMP_STATE ) {
                                                    //toggle fan speed
-                                                   if (toilet_ctrl_data.fan_S_index)
+                                                   if ( toilet_ctrl_data.fan_S_index )
                                                        toilet_ctrl_data.fan_S_index = 0;
                                                    else
                                                        toilet_ctrl_data.fan_S_index = 1;
@@ -204,7 +247,6 @@ uint16_t key_scanning ( void ) {
     uint16_t press_key;
     
     key_scan_out1_SetDigitalOutput ();
-    key_scan_out1_SetDigitalInput ();
     key_in1 = key_scan_in1_GetValue ();
     key_in2 = key_scan_in2_GetValue ();
     key_in3 = key_scan_in3_GetValue ();
@@ -214,9 +256,9 @@ uint16_t key_scanning ( void ) {
         press_key = 1 << SW4_spraying;
     if ( key_in3 )
         press_key = 1 << SW7_increase;
+    key_scan_out1_SetDigitalInput ();
     
     key_scan_out2_SetDigitalOutput ();
-    key_scan_out2_SetDigitalInput ();
     key_in1 = key_scan_in1_GetValue ();
     key_in2 = key_scan_in2_GetValue ();
     key_in3 = key_scan_in3_GetValue ();
@@ -226,15 +268,16 @@ uint16_t key_scanning ( void ) {
         press_key = 1 << SW5_stop_all;
     if ( key_in3 )
         press_key = 1 << SW8_fan_speed_temp;
+    key_scan_out2_SetDigitalInput ();
     
     key_scan_out3_SetDigitalOutput ();
-    key_scan_out3_SetDigitalInput ();
     key_in1 = key_scan_in1_GetValue ();
     key_in2 = key_scan_in2_GetValue ();
     if ( key_in1 )
         press_key = 1 << SW3_washing;
     if ( key_in2 )
         press_key = 1 << SW6_decrease;
+    key_scan_out3_SetDigitalInput ();
  
     return press_key;
 }
@@ -247,6 +290,35 @@ void I2C2_check_error ( I2C2_MESSAGE_STATUS status )
 }
 #endif
 
+void show_display_segment1 ( void )
+{
+    uint8_t i2c_data [ 12 ], i = 0;
+    I2C2_MESSAGE_STATUS i2c_status = I2C2_MESSAGE_COMPLETE;
+    
+	i2c_data [ 0 ] = I2C_HT16C21_CMD_DISPLAY_DATA;
+    i2c_data [ 1 ] = 0x00;
+    memcpy ( i2c_data + 2, disp_ram_map_data, sizeof ( disp_ram_map_data ) );
+    I2C2_MasterWrite ( i2c_data, 12, I2C_HT16C21_ADDRESS, &i2c_status );
+#ifdef debug_HT16C21
+	I2C2_check_error ( i2c_status );
+#endif
+}
+
+//show or clear partial segments, segments ram map store in array
+void show_display_segment ( uint8_t *disp_seg, uint8_t len, bool is_show )
+{
+    uint8_t i, seg_byte_index, seg_bit_pos;
+    
+    for ( i = 0; i < len; i++ ) {
+        seg_byte_index = disp_seg[ i ] / 8; //extract segment byte index
+        seg_bit_pos = disp_seg[ i ] % 8; //extract segment bit postion
+        if ( is_show == true )
+            disp_ram_map_data [ seg_byte_index ] |= ( 1 << seg_bit_pos ); 
+        else
+            disp_ram_map_data [ seg_byte_index ] &= ~( 1 << seg_bit_pos ); 
+    }
+}
+
 void remote_control_init ( void )
 {
     /*void I2C2_MasterWrite(
@@ -254,9 +326,10 @@ void remote_control_init ( void )
             uint8_t length,
             uint16_t address,
             I2C2_MESSAGE_STATUS *pstatus);*/
-    uint8_t i2c_data [ 10 ], i = 0;
+    uint8_t i2c_data [ 2 ], i = 0;
     I2C2_MESSAGE_STATUS i2c_status = I2C2_MESSAGE_COMPLETE;
             
+    DISPLAY_ON ();
     i2c_data [ 0 ] = I2C_HT16C21_CMD_DRIVE_MODE;
     i2c_data [ 1 ] &= 0xFC;  //1/4 duty, 1/3 bias
     I2C2_MasterWrite ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
@@ -278,9 +351,22 @@ void remote_control_init ( void )
 	I2C2_check_error ( i2c_status );
 #endif
 
+#ifdef debug_HT16C21
 	//set whole RAM map as 1
-	i2c_data [ 0 ] = I2C_HT16C21_CMD_FRAME_RATE;
 	for ( i = 0; i < 10; i++ ) {
-	
+		disp_ram_map_data [ i ] = 0xFF;
 	}
+    show_display_segment1 ();
+
+    for ( i = 0; i < 10; i++ )
+        __delay_ms ( 500 );
+#endif
+
+	//set whole RAM map as 0
+	for ( i = 0; i < 10; i++ ) {
+		disp_ram_map_data [ i ] = 0x00;
+	}
+    show_display_segment1 ();
+    
+	show_display_segment ( DISP_regular, sizeof ( DISP_regular), true );
 }

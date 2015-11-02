@@ -45,17 +45,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=mcc_generated_files/spi1.c mcc_generated_files/pin_manager.c mcc_generated_files/mcc.c mcc_generated_files/interrupt_manager.c mcc_generated_files/tmr0.c mcc_generated_files/adc.c mcc_generated_files/i2c2.c main.c A7105.c remote_control.c test.cpp
+SOURCEFILES_QUOTED_IF_SPACED=mcc_generated_files/spi1.c mcc_generated_files/pin_manager.c mcc_generated_files/mcc.c mcc_generated_files/interrupt_manager.c mcc_generated_files/tmr0.c mcc_generated_files/adc.c mcc_generated_files/i2c2.c main.c A7105.c remote_control.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/mcc_generated_files/spi1.p1 ${OBJECTDIR}/mcc_generated_files/pin_manager.p1 ${OBJECTDIR}/mcc_generated_files/mcc.p1 ${OBJECTDIR}/mcc_generated_files/interrupt_manager.p1 ${OBJECTDIR}/mcc_generated_files/tmr0.p1 ${OBJECTDIR}/mcc_generated_files/adc.p1 ${OBJECTDIR}/mcc_generated_files/i2c2.p1 ${OBJECTDIR}/main.p1 ${OBJECTDIR}/A7105.p1 ${OBJECTDIR}/remote_control.p1 ${OBJECTDIR}/test.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/mcc_generated_files/spi1.p1.d ${OBJECTDIR}/mcc_generated_files/pin_manager.p1.d ${OBJECTDIR}/mcc_generated_files/mcc.p1.d ${OBJECTDIR}/mcc_generated_files/interrupt_manager.p1.d ${OBJECTDIR}/mcc_generated_files/tmr0.p1.d ${OBJECTDIR}/mcc_generated_files/adc.p1.d ${OBJECTDIR}/mcc_generated_files/i2c2.p1.d ${OBJECTDIR}/main.p1.d ${OBJECTDIR}/A7105.p1.d ${OBJECTDIR}/remote_control.p1.d ${OBJECTDIR}/test.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/mcc_generated_files/spi1.p1 ${OBJECTDIR}/mcc_generated_files/pin_manager.p1 ${OBJECTDIR}/mcc_generated_files/mcc.p1 ${OBJECTDIR}/mcc_generated_files/interrupt_manager.p1 ${OBJECTDIR}/mcc_generated_files/tmr0.p1 ${OBJECTDIR}/mcc_generated_files/adc.p1 ${OBJECTDIR}/mcc_generated_files/i2c2.p1 ${OBJECTDIR}/main.p1 ${OBJECTDIR}/A7105.p1 ${OBJECTDIR}/remote_control.p1
+POSSIBLE_DEPFILES=${OBJECTDIR}/mcc_generated_files/spi1.p1.d ${OBJECTDIR}/mcc_generated_files/pin_manager.p1.d ${OBJECTDIR}/mcc_generated_files/mcc.p1.d ${OBJECTDIR}/mcc_generated_files/interrupt_manager.p1.d ${OBJECTDIR}/mcc_generated_files/tmr0.p1.d ${OBJECTDIR}/mcc_generated_files/adc.p1.d ${OBJECTDIR}/mcc_generated_files/i2c2.p1.d ${OBJECTDIR}/main.p1.d ${OBJECTDIR}/A7105.p1.d ${OBJECTDIR}/remote_control.p1.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/mcc_generated_files/spi1.p1 ${OBJECTDIR}/mcc_generated_files/pin_manager.p1 ${OBJECTDIR}/mcc_generated_files/mcc.p1 ${OBJECTDIR}/mcc_generated_files/interrupt_manager.p1 ${OBJECTDIR}/mcc_generated_files/tmr0.p1 ${OBJECTDIR}/mcc_generated_files/adc.p1 ${OBJECTDIR}/mcc_generated_files/i2c2.p1 ${OBJECTDIR}/main.p1 ${OBJECTDIR}/A7105.p1 ${OBJECTDIR}/remote_control.p1 ${OBJECTDIR}/test.o
+OBJECTFILES=${OBJECTDIR}/mcc_generated_files/spi1.p1 ${OBJECTDIR}/mcc_generated_files/pin_manager.p1 ${OBJECTDIR}/mcc_generated_files/mcc.p1 ${OBJECTDIR}/mcc_generated_files/interrupt_manager.p1 ${OBJECTDIR}/mcc_generated_files/tmr0.p1 ${OBJECTDIR}/mcc_generated_files/adc.p1 ${OBJECTDIR}/mcc_generated_files/i2c2.p1 ${OBJECTDIR}/main.p1 ${OBJECTDIR}/A7105.p1 ${OBJECTDIR}/remote_control.p1
 
 # Source Files
-SOURCEFILES=mcc_generated_files/spi1.c mcc_generated_files/pin_manager.c mcc_generated_files/mcc.c mcc_generated_files/interrupt_manager.c mcc_generated_files/tmr0.c mcc_generated_files/adc.c mcc_generated_files/i2c2.c main.c A7105.c remote_control.c test.cpp
+SOURCEFILES=mcc_generated_files/spi1.c mcc_generated_files/pin_manager.c mcc_generated_files/mcc.c mcc_generated_files/interrupt_manager.c mcc_generated_files/tmr0.c mcc_generated_files/adc.c mcc_generated_files/i2c2.c main.c A7105.c remote_control.c
 
 
 CFLAGS=
