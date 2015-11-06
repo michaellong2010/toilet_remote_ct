@@ -55,11 +55,11 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
  * @Returns
     none
  * @Description
-    This macro will enable global interrupts.
+    This macro will enable high priority global interrupts.
  * @Example
-    INTERRUPT_GlobalInterruptEnable();
+    INTERRUPT_GlobalInterruptHighEnable();
  */
-#define INTERRUPT_GlobalInterruptEnable() (INTCONbits.GIE = 1)
+#define INTERRUPT_GlobalInterruptHighEnable() (INTCONbits.GIEH = 1)
 
 /**
  * @Param
@@ -67,11 +67,11 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
  * @Returns
     none
  * @Description
-    This macro will disable global interrupts.
+    This macro will disable high priority global interrupts.
  * @Example
-    INTERRUPT_GlobalInterruptDisable();
+    INTERRUPT_GlobalInterruptHighDisable();
  */
-#define INTERRUPT_GlobalInterruptDisable() (INTCONbits.GIE = 0)
+#define INTERRUPT_GlobalInterruptHighDisable() (INTCONbits.GIEH = 0)
 
 /**
  * @Param
@@ -79,11 +79,11 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
  * @Returns
     none
  * @Description
-    This macro will enable peripheral interrupts.
+    This macro will enable low priority global interrupts.
  * @Example
-    INTERRUPT_PeripheralInterruptEnable();
+    INTERRUPT_GlobalInterruptLowEnable();
  */
-#define INTERRUPT_PeripheralInterruptEnable() (INTCONbits.PEIE = 1)
+#define INTERRUPT_GlobalInterruptLowEnable() (INTCONbits.GIEL = 1)
 
 /**
  * @Param
@@ -91,11 +91,12 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
  * @Returns
     none
  * @Description
-    This macro will disable peripheral interrupts.
+    This macro will disable low priority global interrupts.
  * @Example
-    INTERRUPT_PeripheralInterruptDisable();
+    INTERRUPT_GlobalInterruptLowDisable();
  */
-#define INTERRUPT_PeripheralInterruptDisable() (INTCONbits.PEIE = 0)
+#define INTERRUPT_GlobalInterruptLowDisable() (INTCONbits.GIEL = 0)
+
 
 /**
  * @Param
@@ -115,12 +116,23 @@ void INTERRUPT_Initialize(void);
  * @Returns
     none
  * @Description
-    Interrupt service routine. Calls module interrupt handlers.
+    High priority interrupt service routine. Calls module interrupt handlers.
  * @Example
-    INTERRUPT_InterruptManager();
+    INTERRUPT_InterruptManagerHigh();
  */
-void interrupt INTERRUPT_InterruptManager(void);
+void interrupt INTERRUPT_InterruptManagerHigh(void);
 
+/**
+ * @Param
+    none
+ * @Returns
+    none
+ * @Description
+    Low priority interrupt service routine. Calls module interrupt handlers.
+ * @Example
+    INTERRUPT_InterruptManagerLow();
+ */
+void interrupt low_priority INTERRUPT_InterruptManagerLow(void);
 #endif  // INTERRUPT_MANAGER_H
 /**
  End of File

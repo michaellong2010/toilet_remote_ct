@@ -50,39 +50,51 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "mcc.h"
 
 void INTERRUPT_Initialize(void) {
-    // Disable Interrupt Priority Vectors (16CXXX Compatibility Mode)
-    RCONbits.IPEN = 0;
+    // Enable Interrupt Priority Vectors
+    RCONbits.IPEN = 1;
 
-    // Clear peripheral interrupt priority bits (default reset value)
+    // Assign peripheral interrupt priority vectors
 
-    // RBI
-    INTCON2bits.RBIP = 0;
-    // SSPI
+    // SSPI - high priority
     IPR3bits.SSP2IP = 1;
-    // BCLI
-    IPR3bits.BCL2IP = 0;
-    // TMRI
+
+    // BCLI - high priority
+    IPR3bits.BCL2IP = 1;
+
+    // RBI - high priority
+    INTCON2bits.RBIP = 1;
+
+
+    // TMRI - low priority
     INTCON2bits.TMR0IP = 0;
+
+
 }
 
-void interrupt INTERRUPT_InterruptManager(void) {
+void interrupt INTERRUPT_InterruptManagerHigh(void) {
     // interrupt handler
-    if (INTCONbits.RBIE == 1 && INTCONbits.RBIF == 1) {
+    if (PIE3bits.SSP2IE == 1 && PIR3bits.SSP2IF == 1) {
+        I2C2_ISR();
+    } else if (PIE3bits.BCL2IE == 1 && PIR3bits.BCL2IF == 1) {
+        I2C2_BusCollisionISR();
+    } else if (INTCONbits.RBIE == 1 && INTCONbits.RBIF == 1) {
         PIN_MANAGER_IOC();
 
         // clear global interrupt-on-change flag
         INTCONbits.RBIF = 0;
-    } else if (PIE3bits.SSP2IE == 1 && PIR3bits.SSP2IF == 1) {
-        I2C2_ISR();
-    } else if (PIE3bits.BCL2IE == 1 && PIR3bits.BCL2IF == 1) {
-        I2C2_BusCollisionISR();
-    } else if (INTCONbits.TMR0IE == 1 && INTCONbits.TMR0IF == 1) {
-        TMR0_ISR();
     } else {
         //Unhandled Interrupt
     }
 }
 
+void interrupt low_priority INTERRUPT_InterruptManagerLow(void) {
+    // interrupt handler
+    if (INTCONbits.TMR0IE == 1 && INTCONbits.TMR0IF == 1) {
+        TMR0_ISR();
+    } else {
+        //Unhandled Interrupt
+    }
+}
 /**
  End of File
  */

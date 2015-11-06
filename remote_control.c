@@ -359,9 +359,42 @@ void show_display_segment1 ( void )
     i2c_data [ 1 ] = 0x00;
     memcpy ( i2c_data + 2, disp_ram_map_data, sizeof ( disp_ram_map_data ) );
     I2C2_MasterWrite ( i2c_data, 12, I2C_HT16C21_ADDRESS, &i2c_status );
+    __delay_ms ( 10 );
 #ifdef debug_HT16C21
 	I2C2_check_error ( i2c_status );
 #endif
+    memset ( i2c_data + 2, 0, sizeof ( disp_ram_map_data ) );
+    I2C2_MasterWrite ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
+    //__delay_ms ( 10 );
+    I2C2_MasterRead ( i2c_data + 2, 10, I2C_HT16C21_ADDRESS, &i2c_status );
+    //__delay_ms ( 10 );
+    
+
+    i2c_data [ 0 ] = I2C_HT16C21_CMD_SYSTEM_MODE;
+    i2c_data [ 1 ] |= 0x03;  //system osc & lcd on/on
+    I2C2_MasterWrite ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
+    __delay_ms ( 10 );
+#ifdef debug_HT16C21
+	I2C2_check_error ( i2c_status );
+#endif
+
+    i2c_data [ 0 ] = I2C_HT16C21_IVA;
+    i2c_data [ 1 ] = 0x00;  //
+    I2C2_MasterWrite ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
+    __delay_ms ( 10 );
+#ifdef debug_HT16C21
+	I2C2_check_error ( i2c_status );
+#endif    
+    
+    i2c_data [ 0 ] = I2C_HT16C21_BLINK_FREQ;
+    i2c_data [ 1 ] = 0x00;  //system osc & lcd on/off
+    I2C2_MasterWrite ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
+    __delay_ms ( 10 );
+#ifdef debug_HT16C21
+	I2C2_check_error ( i2c_status );
+#endif
+    
+    
 }
 
 //show or clear partial segments, segments ram map store in array
@@ -388,25 +421,32 @@ void remote_control_init ( void )
             I2C2_MESSAGE_STATUS *pstatus);*/
     uint8_t i2c_data [ 2 ], i = 0;
     I2C2_MESSAGE_STATUS i2c_status = I2C2_MESSAGE_COMPLETE;
-            
+#if 0         
+    DISPLAY_OFF ();
     DISPLAY_ON ();
     i2c_data [ 0 ] = I2C_HT16C21_CMD_DRIVE_MODE;
-    i2c_data [ 1 ] &= 0xFC;  //1/4 duty, 1/3 bias
-    I2C2_MasterWrite ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
+    i2c_data [ 1 ] = 0x03;  //1/4 duty, 1/3 bias
+    I2C2_MasterWrite ( i2c_data, 1, I2C_HT16C21_ADDRESS, &i2c_status );
+    __delay_ms ( 10 );
+    i2c_data [ 1 ] = 0x00;
+    I2C2_MasterRead ( i2c_data + 1, 1, I2C_HT16C21_ADDRESS, &i2c_status );
+    __delay_ms ( 10 );
 #ifdef debug_HT16C21
-	I2C2_check_error ( i2c_status );
+     I2C2_check_error ( i2c_status );
 #endif
     
     i2c_data [ 0 ] = I2C_HT16C21_CMD_SYSTEM_MODE;
-    i2c_data [ 1 ] &= 0xFC;  //system osc & lcd on/off
-    I2C2_MasterWrite ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
+    i2c_data [ 1 ] = 0x00;  //system osc & lcd on/off
+    I2C2_MasterRead ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
+    __delay_ms ( 10 );
 #ifdef debug_HT16C21
 	I2C2_check_error ( i2c_status );
 #endif
 
     i2c_data [ 0 ] = I2C_HT16C21_CMD_FRAME_RATE;
-    i2c_data [ 1 ] &= 0xFE;  //setting frame rate 80Hz
-    I2C2_MasterWrite ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
+    i2c_data [ 1 ] &= 0xFF;  //setting frame rate 80Hz
+    I2C2_MasterRead ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
+    __delay_ms ( 10 );
 #ifdef debug_HT16C21
 	I2C2_check_error ( i2c_status );
 #endif
@@ -414,12 +454,15 @@ void remote_control_init ( void )
 #ifdef debug_HT16C21
 	//set whole RAM map as 1
 	for ( i = 0; i < 10; i++ ) {
-		disp_ram_map_data [ i ] = 0xFF;
+        if ( i %2 )
+            disp_ram_map_data [ i ] = 0x00;
+        else
+            disp_ram_map_data [ i ] = 0xFF;
 	}
     show_display_segment1 ();
 
     for ( i = 0; i < 10; i++ )
-        __delay_ms ( 500 );
+        __delay_ms ( 10 );
 #endif
 
 	//set whole RAM map as 0
@@ -432,7 +475,7 @@ void remote_control_init ( void )
     
     //start timer0
     TMR0_StartTimer( );
-
+#endif
 #ifdef debug_A7105_SPI
     if ( A7105_SpiTest () == true )
         while ( 1 );

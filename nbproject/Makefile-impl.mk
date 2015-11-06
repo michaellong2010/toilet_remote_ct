@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=toilet_remote_ct
+PROJECTNAME=toilet_remote_ctl.X
 
 # Active Configuration
 DEFAULTCONF=default

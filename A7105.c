@@ -117,7 +117,7 @@ Uint8 A7105_ReadReg(Uint8 addr)
     uint8_t n_bytes;
 
     MSPI_CS_SetLow();
-    SPI_MOSI_buf [ 0 ] = addr;
+    SPI_MOSI_buf [ 0 ] = addr | 0x40;
     n_bytes = SPI1_Exchange8bitBuffer(SPI_MOSI_buf, 1, SPI_MISO_buf);
     tmp = SPI_MISO_buf [ 0 ];
     MSPI_CS_SetHigh();
@@ -311,10 +311,11 @@ bool A7105_SpiTest ( void )
 {
     bool SpiRW_test_status = false;
 
+    A7105_Reset(); //reset A7105 RF chip
     //spi 3-wire configure R8/NC, R9/0ohm; 4-wire configure R8/0ohm, R9/NC
-#ifdef SPI_4_WIRE
-    A7105_WriteReg ( GPIO1_REG, 0x06 );
-#endif
+//#ifdef SPI_4_WIRE
+    A7105_WriteReg ( GPIO1_REG, 0x19 );
+//#endif
     if ( A7105_WriteID ( ))
        SpiRW_test_status = true; 
 }

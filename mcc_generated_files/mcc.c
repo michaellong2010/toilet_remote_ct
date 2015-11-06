@@ -120,12 +120,12 @@ void SYSTEM_Initialize(void) {
 }
 
 void OSCILLATOR_Initialize(void) {
-    // SCS FOSC; IDLEN disabled; IRCF 1MHz_HFINTOSC/16; 
-    OSCCON = 0x30;
+    // SCS INTOSC; IDLEN disabled; IRCF 1MHz_HFINTOSC/16; 
+    OSCCON = 0x32;
     // PRISD enabled; MFIOSEL disabled; SOSCGO disabled; 
     OSCCON2 = 0x04;
-    // INTSRC disabled; PLLEN disabled; TUN 0x00; 
-    OSCTUNE = 0x00;
+    // INTSRC disabled; PLLEN enabled; TUN 0x00; 
+    OSCTUNE = 0x40;
     // Set the secondary oscillator
 
 }
