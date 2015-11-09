@@ -140,27 +140,27 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 #define MSPI_CS_SetAnalogMode()   do { ANSA5 = 1; } while(0)
 #define MSPI_CS_SetDigitalMode()   do { ANSA5 = 0; } while(0)
-// get/set key_scan_in2 aliases
-#define key_scan_in2_TRIS               TRISA6
-#define key_scan_in2_LAT                LATA6
-#define key_scan_in2_PORT               PORTAbits.RA6
-#define key_scan_in2_SetHigh()    do { LATA6 = 1; } while(0)
-#define key_scan_in2_SetLow()   do { LATA6 = 0; } while(0)
-#define key_scan_in2_Toggle()   do { LATA6 = ~LATA6; } while(0)
-#define key_scan_in2_GetValue()         PORTAbits.RA6
-#define key_scan_in2_SetDigitalInput()    do { TRISA6 = 1; } while(0)
-#define key_scan_in2_SetDigitalOutput()   do { TRISA6 = 0; } while(0)
-
 // get/set key_scan_in3 aliases
-#define key_scan_in3_TRIS               TRISA7
-#define key_scan_in3_LAT                LATA7
-#define key_scan_in3_PORT               PORTAbits.RA7
-#define key_scan_in3_SetHigh()    do { LATA7 = 1; } while(0)
-#define key_scan_in3_SetLow()   do { LATA7 = 0; } while(0)
-#define key_scan_in3_Toggle()   do { LATA7 = ~LATA7; } while(0)
-#define key_scan_in3_GetValue()         PORTAbits.RA7
-#define key_scan_in3_SetDigitalInput()    do { TRISA7 = 1; } while(0)
-#define key_scan_in3_SetDigitalOutput()   do { TRISA7 = 0; } while(0)
+#define key_scan_in3_TRIS               TRISA6
+#define key_scan_in3_LAT                LATA6
+#define key_scan_in3_PORT               PORTAbits.RA6
+#define key_scan_in3_SetHigh()    do { LATA6 = 1; } while(0)
+#define key_scan_in3_SetLow()   do { LATA6 = 0; } while(0)
+#define key_scan_in3_Toggle()   do { LATA6 = ~LATA6; } while(0)
+#define key_scan_in3_GetValue()         PORTAbits.RA6
+#define key_scan_in3_SetDigitalInput()    do { TRISA6 = 1; } while(0)
+#define key_scan_in3_SetDigitalOutput()   do { TRISA6 = 0; } while(0)
+
+// get/set key_scan_in2 aliases
+#define key_scan_in2_TRIS               TRISA7
+#define key_scan_in2_LAT                LATA7
+#define key_scan_in2_PORT               PORTAbits.RA7
+#define key_scan_in2_SetHigh()    do { LATA7 = 1; } while(0)
+#define key_scan_in2_SetLow()   do { LATA7 = 0; } while(0)
+#define key_scan_in2_Toggle()   do { LATA7 = ~LATA7; } while(0)
+#define key_scan_in2_GetValue()         PORTAbits.RA7
+#define key_scan_in2_SetDigitalInput()    do { TRISA7 = 1; } while(0)
+#define key_scan_in2_SetDigitalOutput()   do { TRISA7 = 0; } while(0)
 
 // get/set SCL2 aliases
 #define SCL2_TRIS               TRISB1

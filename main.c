@@ -40,10 +40,23 @@ void main(void) {
     //key_scan_out2_SetDigitalOutput ();
     //key_scan_out2_SetHigh ();
     //key_scan_out2_SetLow ();
-    //remote_control_init ();
-    TMR0_StartTimer( );
-    while (1);
-    /*    toilet_state_action ();*/
+    TMR0_StopTimer ();
+    key_scan_out1_SetHigh();
+    key_scan_out1_SetLow();
+    key_scan_out2_SetHigh();
+    key_scan_out2_SetLow();
+    key_scan_out3_SetHigh();
+    key_scan_out3_SetLow();
+    __delay_ms (100);
+    //key_scan_in1_SetLow();
+    //key_scan_in2_SetLow();
+    //key_scan_in3_SetLow();
+    //TMR0_StartTimer( );
+    remote_control_init ();
+    while (1) {
+        __delay_ms (10);
+        //toilet_state_action ();
+    }
     //show_display_segment ( DISP_mode_logo[Clear_All_Logo], sizeof ( DISP_mode_logo[Clear_All_Logo] ), false );
     return;
 }

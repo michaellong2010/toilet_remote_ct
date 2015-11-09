@@ -189,7 +189,7 @@ S_OFF, S_Y7, S_Y8, S_Y9 //clear
 };
 
 #define Seat_Logo 0
-#define Spraying_Logo 1
+#define Water_Tank_Temp_Logo 1
 #define Clear_All_Logo 2
 uint8_t DISP_mode_logo [][2] = {
 S_Y3, S_Y3,

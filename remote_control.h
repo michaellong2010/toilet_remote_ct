@@ -39,13 +39,14 @@ extern "C" {
 //for key buffer
 #define KEY_COUNT 8
 #define KEY_BUFFER_SIZE ( 1000 / 131 )
-#define ASSERT_TIMES_THRESHOLD  0.6 * ( 1000 / 131 )
+#define ASSERT_TIMES_THRESHOLD (int)((double) ( 0.6 * 1000 / 131 ))
  
 //LCD display backlight
 #define DISPLAY_ON() backlight_SetHigh()
 #define DISPLAY_OFF() backlight_SetLow()
-#define DISPLAY_OFF_IDLE_SECONDS 15
-#define DISPLAY_OFF_TIMER_OVERFLOW_COUNT ( 1000 * DISPLAY_OFF_IDLE_SECONDS ) / 131
+#define DISPLAY_OFF_IDLE_SECONDS 15 * 3
+//#define DISPLAY_OFF_TIMER_OVERFLOW_COUNT ( 1000 * DISPLAY_OFF_IDLE_SECONDS ) / 131
+#define DISPLAY_OFF_TIMER_OVERFLOW_COUNT 115 * 3
 #define I2C_HT16C21_ADDRESS ( 0x70 >> 1 )
 #define I2C_HT16C21_CMD_DISPLAY_DATA 0x80
 #define I2C_HT16C21_CMD_DRIVE_MODE 0x82
@@ -61,7 +62,7 @@ extern "C" {
 //define macro for debug use
 #define debug_HT16C21 1  //debug step1
 #define debug_key_scanning 1  //debug ky scan
-#define debug_A7105_SPI 1  //debug A7105 SPI R/W
+//#define debug_A7105_SPI 1  //debug A7105 SPI R/W
 typedef enum {
     TOIET_DUMMY_STATE,
     TOIET_WATER_TEMP_STATE,
@@ -70,6 +71,11 @@ typedef enum {
     TOIET_SPRAYING_STATE,
     TOIET_FAN_SPEED_TEMP_STATE
 } TOIET_STATE;
+
+typedef enum {
+    START_KEY_STATE,
+    STOP_KEY_STATE
+} KEY_SCAN_STATE;
 
 uint8_t water_T_level [] = { 'N', 35, 37, 39 };
 uint8_t toilet_seat_T_level [] = { 'N', 35, 37, 39 };
@@ -88,11 +94,14 @@ typedef struct {
     uint16_t X_coord_val, Y_coord_val;
     TOIET_STATE toilet_state;
 } Toilet_Ctl_Data_t;
-Toilet_Ctl_Data_t toilet_ctrl_data = { 0, 0, FAN_OFF, 0, 0, 0, 0, TOIET_DUMMY_STATE };
+Toilet_Ctl_Data_t toilet_ctrl_data = { 0, 0, FAN_OFF, 1, 0, 1, 0, 0, 0, TOIET_DUMMY_STATE };
 extern volatile TOIET_STATE toilet_cur_state,toilet_last_state, toilet_next_state;
 extern volatile uint8_t lock;
 extern double Env_T;  //enviroment temperature;
 uint8_t disp_ram_map_data [ 10 ] = { 0 };  //display scanning map for HT16C21
+int8_t level_index = -1;
+bool level_index_dirty = false;
+
 
 uint16_t key_scanning ( void );
 void issue_key_scanning ( void );  //ISR for timer overflow,currently overflow period about 262ms

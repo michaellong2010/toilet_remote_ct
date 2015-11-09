@@ -50,6 +50,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 #include <xc.h>
 #include "tmr0.h"
+#include "../remote_control.h"
 
 /**
   Section: Global Variables Definitions
@@ -83,7 +84,7 @@ void TMR0_Initialize(void) {
     INTCONbits.TMR0IE = 1;
 
     // Start TMR0
-    TMR0_StartTimer();
+    //TMR0_StartTimer();
 }
 
 void TMR0_StartTimer(void) {
@@ -139,6 +140,7 @@ void TMR0_ISR(void) {
 void TMR0_CallBack(void) {
     // Add your custom callback code here
     // this code executes every 128 TMR0 periods
+    issue_key_scanning ();
 }
 /**
   End of File
