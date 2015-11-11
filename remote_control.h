@@ -20,6 +20,7 @@ extern "C" {
 #include "LCD_xxx.h"
 #include "mcc_generated_files/mcc.h"
 #include "A7105reg.h"
+#include "mcc_generated_files/eusart1.h"
 //switch button
 #define SW1_water_tank_temp 0
 #define SW2_toilet_seat_temp 1
@@ -93,23 +94,27 @@ typedef struct {
     uint8_t spraying_F_index;
     uint16_t X_coord_val, Y_coord_val;
     TOIET_STATE toilet_state;
+    bool joystick_lock;
+    bool spotlight_on_off;
 } Toilet_Ctl_Data_t;
-Toilet_Ctl_Data_t toilet_ctrl_data = { 0, 0, FAN_OFF, 1, 0, 1, 0, 0, 0, TOIET_DUMMY_STATE };
+Toilet_Ctl_Data_t toilet_ctrl_data = { 0, 0, FAN_OFF, 1, 0, 1, 0, 0, 0, TOIET_DUMMY_STATE, 0, 0 };
 extern volatile TOIET_STATE toilet_cur_state,toilet_last_state, toilet_next_state;
 extern volatile uint8_t lock;
 extern double Env_T;  //enviroment temperature;
 uint8_t disp_ram_map_data [ 10 ] = { 0 };  //display scanning map for HT16C21
-int8_t level_index = -1;
+int16_t level_index = -1;
 bool level_index_dirty = false;
+volatile uint16_t routine_refresh_display = 0;
 
 
 uint16_t key_scanning ( void );
 void issue_key_scanning ( void );  //ISR for timer overflow,currently overflow period about 262ms
 void toilet_state_action ( void );
-uint8_t transmit_remote_data ( Toilet_Ctl_Data_t toilet_data );  //transmit toilet control data to host via RF 
+uint8_t transmit_remote_data ( /*Toilet_Ctl_Data_t toilet_data*/ );  //transmit toilet control data to host via RF 
 void remote_control_init ( void );
 void show_display_segment ( uint8_t *disp_seg, uint8_t len, bool is_show );
 void show_display_segment1 ( void );
+void toggle_lock ( void );
 
 #ifdef	__cplusplus
 }

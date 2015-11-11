@@ -8,14 +8,34 @@ double Env_T = 0.0, BAT_voltage1 = 0.0 , BAT_voltage2 = 0.0;  //enviroment tempe
 
 
 
-uint8_t transmit_remote_data ( Toilet_Ctl_Data_t toilet_data ) {
+uint8_t transmit_remote_data ( /*Toilet_Ctl_Data_t toilet_data*/ ) {
+    //"Request send toilet data!"
+    //start: 0x55,0xAA
+    //send Toilet_Ctl_Data_t
+    //end: 0xAA, 0x55
+    uint8_t data_buf [ 20 ];
+    int16_t data_len = sizeof ( Toilet_Ctl_Data_t ), i = 0;
+    
+    EUSART1_Write ( 0x55 );
+    __delay_ms ( 1 );
+    EUSART1_Write ( 0xAA );
+    __delay_ms ( 1 );
+    memcpy ( data_buf, ( void * ) &toilet_ctrl_data, data_len );
+
+    for ( i = 0; i < sizeof (toilet_ctrl_data); i++ ) {
+        EUSART1_Write ( data_buf [ i ] );
+        __delay_ms ( 1 );
+    }    
+    //EUSART1_Write ( 0xAA );
+    //EUSART1_Write ( 0x55 );
     return 0;
 }
 
 /* refresh toilet state, refresh remote display, monitor rocker lock on/off and fetch ADC
  * pass toilet_ctrl_data to host via RF TX */
 void toilet_state_action ( void ) {
-    bool is_need_refresh = false;
+    bool is_need_refresh = false, is_need_redraw = false;
+    int16_t levels = 0;
     //static int8_t level_index = -1;
     
     if ( toilet_cur_state !=  toilet_next_state) {
@@ -38,8 +58,9 @@ void toilet_state_action ( void ) {
                     break;
             }
             toilet_next_state = TOIET_DUMMY_STATE;
-			show_display_segment1 ();
+			//show_display_segment1 ();
         }
+        is_need_redraw = true;
     }
 
 	if ( level_index_dirty ) {
@@ -63,28 +84,51 @@ void toilet_state_action ( void ) {
             break;
     }*/
     //if ( toilet_next_state != TOIET_SPRAYING_STATE /*&& toilet_next_state != TOIET_DUMMY_STATE*/ )
-        if ( level_index >= 0 )
-            show_display_segment ( DISP_misc_level [ level_index ], sizeof ( DISP_misc_level [ level_index ] ), true );
-		show_display_segment1 ();
+        levels = level_index & (~LEVEL_DIR_MASK);
+        if ( levels >= 0 )
+            show_display_segment ( DISP_misc_level [ levels ], sizeof ( DISP_misc_level [ levels ] ), true );
+		//show_display_segment1 ();
+        level_index_dirty = false;
 		is_need_refresh = true;
+        is_need_redraw = true;
 	}
     //if ( toilet_next_state == TOIET_WATER_TEMP_STATE || toilet_next_state == TOIET_SEAT_TEMP_STATE )
         //toilet_next_state = TOIET_DUMMY_STATE;
-    return;
     
-    if ( toilet_cur_state == TOIET_WASHING_STATE || toilet_cur_state == TOIET_SPRAYING_STATE || toilet_cur_state == TOIET_FAN_SPEED_TEMP_STATE  ) {
-        if ( !lock ) {
-            /*fetch X & Y ADC*/
-            toilet_ctrl_data.X_coord_val = ADC_GetConversion( channel_AN0 );
+    if ( routine_refresh_display == 1 || is_need_redraw == true ) {
+    show_display_segment ( DISP_7SEG_5 [ Clear_7SEG ], sizeof ( DISP_7SEG_5 [ Clear_7SEG ] ), false );
+    show_display_segment ( DISP_7SEG_6 [ Clear_7SEG ], sizeof ( DISP_7SEG_6 [ Clear_7SEG ] ), false );
+    show_display_segment ( DISP_7SEG_5 [ 2 ], sizeof ( DISP_7SEG_5 [ 2 ] ), true );
+    show_display_segment ( DISP_7SEG_6 [ 6 ], sizeof ( DISP_7SEG_6 [ 6 ] ), true );
+    
+    show_display_segment ( DISP_bat_level [ Clear_Bat_Level ], sizeof ( DISP_bat_level [ Clear_Bat_Level ] ), false );
+    show_display_segment ( DISP_bat_level [ 3 ], sizeof ( DISP_bat_level [ 3 ] ), true );
+	show_display_segment1 ();
+    routine_refresh_display = 0;
+    }    
+    
+    /*if ( toilet_cur_state == TOIET_WASHING_STATE || toilet_cur_state == TOIET_SPRAYING_STATE || toilet_cur_state == TOIET_FAN_SPEED_TEMP_STATE  ) {
+        if ( !lock ) {*/
+            /*fetch X & Y ADC, 0.4V~2.8V, 125~860*/
+            /*toilet_ctrl_data.X_coord_val = ADC_GetConversion( channel_AN0 );
             toilet_ctrl_data.Y_coord_val = ADC_GetConversion( channel_AN1 );
             is_need_refresh = true;
         }
         else {
         }
-    }
+    }*/
     
     if ( is_need_refresh ) {
         /* do RF TX to transfer `toilet_ctrl_data` to host and refresh display */
+        transmit_remote_data ( );
+        is_need_refresh = false;
+        show_display_segment1 ();
+    }    
+    return;
+    
+    if ( is_need_refresh ) {
+        /* do RF TX to transfer `toilet_ctrl_data` to host and refresh display */
+        transmit_remote_data ( );
     }
     Env_T = (double) ADC_GetConversion( channel_AN2 );
     BAT_voltage1 = (double) ADC_GetConversion( channel_AN3 );
@@ -99,7 +143,7 @@ void toilet_state_action ( void ) {
 }
 
 void toggle_lock ( void ) {
-    if ( lock )
+    if ( lock == 0 )
         lock = 0;
     else
         lock = 1;
@@ -110,6 +154,8 @@ void issue_key_scanning ( void ) {
     //static TOIET_STATE toilet_cur_state = TOIET_DUMMY_STATE, toilet_last_state, toilet_next_state;
     static uint16_t newest_press_key = 0, n_timer_off_count = 0;
     int16_t n_timer_overflow_count = ( int16_t ) ( ( double ) DISPLAY_OFF_TIMER_OVERFLOW_COUNT );
+    uint8_t i2c_data [ 12 ];
+    I2C2_MESSAGE_STATUS i2c_status = I2C2_MESSAGE_COMPLETE;
    
    //if ( toilet_last_state != toilet_cur_state )
         //toilet_last_state = toilet_cur_state;
@@ -123,11 +169,25 @@ void issue_key_scanning ( void ) {
         else
             if ( n_timer_off_count >= n_timer_overflow_count ) {
                 DISPLAY_OFF ();
+                i2c_data [ 0 ] = I2C_HT16C21_CMD_SYSTEM_MODE;
+                i2c_data [ 1 ] |= 0x00;  //system osc & lcd off
+                I2C2_MasterWrite ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
+                __delay_ms ( 10 );
+/*#ifdef debug_HT16C21
+                I2C2_check_error ( i2c_status );
+#endif*/
             }
         return;
     }
     else {
         DISPLAY_ON ();
+        i2c_data [ 0 ] = I2C_HT16C21_CMD_SYSTEM_MODE;
+        i2c_data [ 1 ] |= 0x03;  //system osc & lcd on/on
+        I2C2_MasterWrite ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
+        __delay_ms ( 10 );
+/*#ifdef debug_HT16C21
+        I2C2_check_error ( i2c_status );
+#endif*/
         n_timer_off_count = 0;
     }
     //return;
@@ -256,12 +316,14 @@ void issue_key_scanning ( void ) {
                                        }
                                        else
                                            if ( toilet_cur_state == TOIET_FAN_SPEED_TEMP_STATE ) {
-											   if ( !( toilet_ctrl_data.fan_T_index & ~LEVEL_DIR_MASK  ) ) {
+                                               if ( toilet_ctrl_data.fan_T_index > 0 )
+                                                   toilet_ctrl_data.fan_T_index--;
+											   /*if ( !( toilet_ctrl_data.fan_T_index & ~LEVEL_DIR_MASK  ) ) {
 												   toilet_ctrl_data.fan_T_index ^= LEVEL_DIR_MASK;
 												   toilet_ctrl_data.fan_T_index++;
 											   }
 											   else
-												   toilet_ctrl_data.fan_T_index--;
+												   toilet_ctrl_data.fan_T_index--;*/
 											   level_index_dirty = true;
 											   level_index = toilet_ctrl_data.fan_T_index;
                                            }
@@ -276,14 +338,16 @@ void issue_key_scanning ( void ) {
                                            }
                                            else
                                                if ( toilet_cur_state == TOIET_FAN_SPEED_TEMP_STATE ) {
-												   if ( ( toilet_ctrl_data.fan_T_index & LEVEL_DIR_MASK  ) == INCREASE_LEVEL ) {
+                                                   if ( ( toilet_ctrl_data.fan_T_index + 1 ) < ( sizeof ( fan_T_S_level [ toilet_ctrl_data.fan_S_index ] ) / sizeof ( uint8_t ) ) )
+                                                       toilet_ctrl_data.fan_T_index++;
+												   /*if ( ( toilet_ctrl_data.fan_T_index & LEVEL_DIR_MASK  ) == INCREASE_LEVEL ) {
 													   if ( ( toilet_ctrl_data.fan_T_index + 1 ) == ( sizeof ( fan_T_S_level [ toilet_ctrl_data.fan_S_index ] ) / sizeof ( uint8_t ) ) ) {
 														   toilet_ctrl_data.fan_T_index--;
 														   toilet_ctrl_data.fan_T_index |= LEVEL_DIR_MASK;
 													   }
 													   else
 														   toilet_ctrl_data.fan_T_index++;
-												   }
+												   }*/
 												   level_index_dirty = true;
 												   level_index = toilet_ctrl_data.fan_T_index;
                                                }
@@ -604,9 +668,9 @@ void show_display_segment1 ( void )
 #endif
     memset ( i2c_data + 2, 0, sizeof ( disp_ram_map_data ) );
     I2C2_MasterWrite ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
-    //__delay_ms ( 10 );
+    __delay_ms ( 10 );
     I2C2_MasterRead ( i2c_data + 2, 10, I2C_HT16C21_ADDRESS, &i2c_status );
-    //__delay_ms ( 10 );
+    __delay_ms ( 10 );
     
 
     i2c_data [ 0 ] = I2C_HT16C21_CMD_SYSTEM_MODE;

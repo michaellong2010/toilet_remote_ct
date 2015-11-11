@@ -65,17 +65,17 @@ volatile uint8_t timer0ReloadVal8bit;
 void TMR0_Initialize(void) {
     // Set TMR0 to the options selected in the User Interface
 
-    // TMR0ON enabled; T0SE Increment_hi_lo; PSA not_assigned; T0CS FOSC/4; T08BIT 8-bit; T0PS 1:256; 
-    T0CON = 0xDF;
+    // TMR0ON enabled; T0SE Increment_hi_lo; PSA assigned; T0CS FOSC/4; T08BIT 8-bit; T0PS 1:256; 
+    T0CON = 0xD7;
 
     // TMR0H 0; 
     TMR0H = 0x00;
 
-    // TMR0L 0; 
-    TMR0L = 0x00;
+    // TMR0L 192; 
+    TMR0L = 0xC0;
 
     // Load TMR0 value to the 8-bit reload variable
-    timer0ReloadVal8bit = 0;
+    timer0ReloadVal8bit = 192;
 
     // Clear Interrupt flag before enabling the interrupt
     INTCONbits.TMR0IF = 0;
@@ -84,7 +84,7 @@ void TMR0_Initialize(void) {
     INTCONbits.TMR0IE = 1;
 
     // Start TMR0
-    //TMR0_StartTimer();
+    TMR0_StartTimer();
 }
 
 void TMR0_StartTimer(void) {
@@ -117,7 +117,7 @@ void TMR0_Reload8bit(void) {
 }
 
 void TMR0_ISR(void) {
-    static volatile uint16_t CountCallBack = 0;
+    static volatile uint16_t CountCallBack = 0, CountCallBack1 = 0;
 
     // clear the TMR0 interrupt flag
     INTCONbits.TMR0IF = 0;
@@ -133,6 +133,11 @@ void TMR0_ISR(void) {
         // reset ticker counter
         CountCallBack = 0;
     }
+    else 
+        if (++CountCallBack1 >= 1000) {
+            CountCallBack1 = 0;
+            routine_refresh_display = 1;
+        }
 
     // add your TMR0 interrupt custom code
 }
@@ -140,7 +145,7 @@ void TMR0_ISR(void) {
 void TMR0_CallBack(void) {
     // Add your custom callback code here
     // this code executes every 128 TMR0 periods
-    issue_key_scanning ();
+    issue_key_scanning ();    
 }
 /**
   End of File

@@ -325,6 +325,34 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 #define SDO1_SetAnalogMode()   do { ANSC5 = 1; } while(0)
 #define SDO1_SetDigitalMode()   do { ANSC5 = 0; } while(0)
+// get/set TX1 aliases
+#define TX1_TRIS               TRISC6
+#define TX1_LAT                LATC6
+#define TX1_PORT               PORTCbits.RC6
+#define TX1_ANS                ANSC6
+#define TX1_SetHigh()    do { LATC6 = 1; } while(0)
+#define TX1_SetLow()   do { LATC6 = 0; } while(0)
+#define TX1_Toggle()   do { LATC6 = ~LATC6; } while(0)
+#define TX1_GetValue()         PORTCbits.RC6
+#define TX1_SetDigitalInput()    do { TRISC6 = 1; } while(0)
+#define TX1_SetDigitalOutput()   do { TRISC6 = 0; } while(0)
+
+#define TX1_SetAnalogMode()   do { ANSC6 = 1; } while(0)
+#define TX1_SetDigitalMode()   do { ANSC6 = 0; } while(0)
+// get/set RX1 aliases
+#define RX1_TRIS               TRISC7
+#define RX1_LAT                LATC7
+#define RX1_PORT               PORTCbits.RC7
+#define RX1_ANS                ANSC7
+#define RX1_SetHigh()    do { LATC7 = 1; } while(0)
+#define RX1_SetLow()   do { LATC7 = 0; } while(0)
+#define RX1_Toggle()   do { LATC7 = ~LATC7; } while(0)
+#define RX1_GetValue()         PORTCbits.RC7
+#define RX1_SetDigitalInput()    do { TRISC7 = 1; } while(0)
+#define RX1_SetDigitalOutput()   do { TRISC7 = 0; } while(0)
+
+#define RX1_SetAnalogMode()   do { ANSC7 = 1; } while(0)
+#define RX1_SetDigitalMode()   do { ANSC7 = 0; } while(0)
 
 /**
  * @Param

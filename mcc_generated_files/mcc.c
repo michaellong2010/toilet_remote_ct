@@ -117,11 +117,12 @@ void SYSTEM_Initialize(void) {
     TMR0_Initialize();
     ADC_Initialize();
     I2C2_Initialize();
+    EUSART1_Initialize();
 }
 
 void OSCILLATOR_Initialize(void) {
-    // SCS FOSC; IDLEN disabled; IRCF 1MHz_HFINTOSC/16; 
-    OSCCON = 0x30;
+    // SCS FOSC; IDLEN disabled; IRCF 16MHz_HFINTOSC/4; 
+    OSCCON = 0x70;
     // PRISD enabled; MFIOSEL disabled; SOSCGO disabled; 
     OSCCON2 = 0x04;
     // INTSRC disabled; PLLEN enabled; TUN 0x00; 

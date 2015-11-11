@@ -34,7 +34,7 @@ void main(void) {
     INTERRUPT_GlobalInterruptHighEnable();
 
     // Enable low priority global interrupts.
-    INTERRUPT_GlobalInterruptLowEnable();    
+    INTERRUPT_GlobalInterruptLowEnable();
     
     
     //key_scan_out2_SetDigitalOutput ();
@@ -47,7 +47,7 @@ void main(void) {
     key_scan_out2_SetLow();
     key_scan_out3_SetHigh();
     key_scan_out3_SetLow();
-    __delay_ms (100);
+    __delay_ms (10);
     //key_scan_in1_SetLow();
     //key_scan_in2_SetLow();
     //key_scan_in3_SetLow();
@@ -55,7 +55,7 @@ void main(void) {
     remote_control_init ();
     while (1) {
         __delay_ms (10);
-        //toilet_state_action ();
+        toilet_state_action ();
     }
     //show_display_segment ( DISP_mode_logo[Clear_All_Logo], sizeof ( DISP_mode_logo[Clear_All_Logo] ), false );
     return;
