@@ -8,48 +8,29 @@ double Env_T = 0.0, BAT_voltage1 = 0.0 , BAT_voltage2 = 0.0;  //enviroment tempe
 
 
 
-uint8_t transmit_remote_data ( /*Toilet_Ctl_Data_t toilet_data*/ ) {
-    //"Request send toilet data!"
-    //start: 0x55,0xAA
-    //send Toilet_Ctl_Data_t
-    //end: 0xAA, 0x55
-    uint8_t data_buf [ 20 ];
-    int16_t data_len = sizeof ( Toilet_Ctl_Data_t ), i = 0;
-    
-    EUSART1_Write ( 0x55 );
-    __delay_ms ( 1 );
-    EUSART1_Write ( 0xAA );
-    __delay_ms ( 1 );
-    memcpy ( data_buf, ( void * ) &toilet_ctrl_data, data_len );
-
-    for ( i = 0; i < sizeof (toilet_ctrl_data); i++ ) {
-        EUSART1_Write ( data_buf [ i ] );
-        __delay_ms ( 1 );
-    }    
-    //EUSART1_Write ( 0xAA );
-    //EUSART1_Write ( 0x55 );
+uint8_t transmit_remote_data ( Toilet_Ctl_Data_t toilet_data ) {
     return 0;
 }
 
 /* refresh toilet state, refresh remote display, monitor rocker lock on/off and fetch ADC
  * pass toilet_ctrl_data to host via RF TX */
 void toilet_state_action ( void ) {
-    bool is_need_refresh = false, is_need_redraw = false;
-    int16_t levels = 0;
+    bool is_need_refresh = false;
     //static int8_t level_index = -1;
+    int16_t levels = -1;
     
     if ( toilet_cur_state !=  toilet_next_state) {
         //clear all logo display
         show_display_segment ( DISP_mode_logo [ Clear_All_Logo ], sizeof ( DISP_mode_logo [ Clear_All_Logo ] ), false );
-        //if ( toilet_next_state != TOIET_WATER_TEMP_STATE && toilet_next_state != TOIET_SEAT_TEMP_STATE ) {
+        if ( toilet_next_state != TOIET_WATER_TEMP_STATE && toilet_next_state != TOIET_SEAT_TEMP_STATE ) {
             toilet_last_state = toilet_cur_state;
             toilet_cur_state = toilet_next_state;
             toilet_ctrl_data.toilet_state = toilet_cur_state;
             is_need_refresh = true;
-        //}
-        //else {
+        }
+        else {
             //display current state logo
-            /*switch ( toilet_next_state ) {
+            switch ( toilet_next_state ) {
                 case TOIET_WATER_TEMP_STATE:
                     show_display_segment ( DISP_mode_logo [ Water_Tank_Temp_Logo ], sizeof ( DISP_mode_logo [ Water_Tank_Temp_Logo ] ), true );
                     break;
@@ -57,10 +38,9 @@ void toilet_state_action ( void ) {
                     show_display_segment ( DISP_mode_logo [ Seat_Logo ], sizeof ( DISP_mode_logo [ Seat_Logo ] ), true );
                     break;
             }
-            toilet_next_state = TOIET_DUMMY_STATE;*/
-			//show_display_segment1 ();
-        //}
-        //is_need_redraw = true;
+            toilet_next_state = TOIET_DUMMY_STATE;
+			show_display_segment1 ();
+        }
     }
 
 	if ( level_index_dirty ) {
@@ -84,51 +64,29 @@ void toilet_state_action ( void ) {
             break;
     }*/
     //if ( toilet_next_state != TOIET_SPRAYING_STATE /*&& toilet_next_state != TOIET_DUMMY_STATE*/ )
-        levels = level_index & (~LEVEL_DIR_MASK);
+        levels = level_index & 0x7f;
         if ( levels >= 0 )
             show_display_segment ( DISP_misc_level [ levels ], sizeof ( DISP_misc_level [ levels ] ), true );
-		//show_display_segment1 ();
-        level_index_dirty = false;
+		show_display_segment1 ();
 		is_need_refresh = true;
-        is_need_redraw = true;
 	}
     //if ( toilet_next_state == TOIET_WATER_TEMP_STATE || toilet_next_state == TOIET_SEAT_TEMP_STATE )
         //toilet_next_state = TOIET_DUMMY_STATE;
+    return;
     
-    if ( routine_refresh_display == 1 || is_need_redraw == true ) {
-    show_display_segment ( DISP_7SEG_5 [ Clear_7SEG ], sizeof ( DISP_7SEG_5 [ Clear_7SEG ] ), false );
-    show_display_segment ( DISP_7SEG_6 [ Clear_7SEG ], sizeof ( DISP_7SEG_6 [ Clear_7SEG ] ), false );
-    show_display_segment ( DISP_7SEG_5 [ 2 ], sizeof ( DISP_7SEG_5 [ 2 ] ), true );
-    show_display_segment ( DISP_7SEG_6 [ 6 ], sizeof ( DISP_7SEG_6 [ 6 ] ), true );
-    
-    show_display_segment ( DISP_bat_level [ Clear_Bat_Level ], sizeof ( DISP_bat_level [ Clear_Bat_Level ] ), false );
-    show_display_segment ( DISP_bat_level [ 3 ], sizeof ( DISP_bat_level [ 3 ] ), true );
-	show_display_segment1 ();
-    routine_refresh_display = 0;
-    }    
-    
-    /*if ( toilet_cur_state == TOIET_WASHING_STATE || toilet_cur_state == TOIET_SPRAYING_STATE || toilet_cur_state == TOIET_FAN_SPEED_TEMP_STATE  ) {
-        if ( !lock ) {*/
-            /*fetch X & Y ADC, 0.4V~2.8V, 125~860*/
-            /*toilet_ctrl_data.X_coord_val = ADC_GetConversion( channel_AN0 );
+    if ( toilet_cur_state == TOIET_WASHING_STATE || toilet_cur_state == TOIET_SPRAYING_STATE || toilet_cur_state == TOIET_FAN_SPEED_TEMP_STATE  ) {
+        if ( !lock ) {
+            /*fetch X & Y ADC*/
+            toilet_ctrl_data.X_coord_val = ADC_GetConversion( channel_AN0 );
             toilet_ctrl_data.Y_coord_val = ADC_GetConversion( channel_AN1 );
             is_need_refresh = true;
         }
         else {
         }
-    }*/
+    }
     
     if ( is_need_refresh ) {
         /* do RF TX to transfer `toilet_ctrl_data` to host and refresh display */
-        transmit_remote_data ( );
-        is_need_refresh = false;
-        //show_display_segment1 ();
-    }    
-    return;
-    
-    if ( is_need_refresh ) {
-        /* do RF TX to transfer `toilet_ctrl_data` to host and refresh display */
-        transmit_remote_data ( );
     }
     Env_T = (double) ADC_GetConversion( channel_AN2 );
     BAT_voltage1 = (double) ADC_GetConversion( channel_AN3 );
@@ -143,7 +101,7 @@ void toilet_state_action ( void ) {
 }
 
 void toggle_lock ( void ) {
-    if ( lock == 0 )
+    if ( lock )
         lock = 0;
     else
         lock = 1;
@@ -154,8 +112,6 @@ void issue_key_scanning ( void ) {
     //static TOIET_STATE toilet_cur_state = TOIET_DUMMY_STATE, toilet_last_state, toilet_next_state;
     static uint16_t newest_press_key = 0, n_timer_off_count = 0;
     int16_t n_timer_overflow_count = ( int16_t ) ( ( double ) DISPLAY_OFF_TIMER_OVERFLOW_COUNT );
-    uint8_t i2c_data [ 12 ];
-    I2C2_MESSAGE_STATUS i2c_status = I2C2_MESSAGE_COMPLETE;
    
    //if ( toilet_last_state != toilet_cur_state )
         //toilet_last_state = toilet_cur_state;
@@ -167,28 +123,13 @@ void issue_key_scanning ( void ) {
             n_timer_off_count++;
         }
         else
-            if ( n_timer_off_count == n_timer_overflow_count ) {
+            if ( n_timer_off_count >= n_timer_overflow_count ) {
                 DISPLAY_OFF ();
-                i2c_data [ 0 ] = I2C_HT16C21_CMD_SYSTEM_MODE;
-                i2c_data [ 1 ] |= 0x00;  //system osc & lcd off
-                I2C2_MasterWrite ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
-                __delay_ms ( 10 );
-                n_timer_off_count++;
-/*#ifdef debug_HT16C21
-                I2C2_check_error ( i2c_status );
-#endif*/
             }
         return;
     }
     else {
         DISPLAY_ON ();
-        i2c_data [ 0 ] = I2C_HT16C21_CMD_SYSTEM_MODE;
-        i2c_data [ 1 ] |= 0x03;  //system osc & lcd on/on
-        I2C2_MasterWrite ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
-        __delay_ms ( 10 );
-/*#ifdef debug_HT16C21
-        I2C2_check_error ( i2c_status );
-#endif*/
         n_timer_off_count = 0;
     }
     //return;
@@ -198,7 +139,7 @@ void issue_key_scanning ( void ) {
     if ( toilet_cur_state  <= TOIET_FAN_SPEED_TEMP_STATE ) {
 
             if ( newest_press_key & ( 1 << SW1_water_tank_temp ) ) {
-                //toilet_next_state = TOIET_WATER_TEMP_STATE;
+                toilet_next_state = TOIET_WATER_TEMP_STATE;
                 if ( ( toilet_ctrl_data.water_T_index & LEVEL_DIR_MASK  ) == INCREASE_LEVEL ) {
                     if ( ( toilet_ctrl_data.water_T_index + 1 ) == ( sizeof ( water_T_level ) / sizeof ( uint8_t ) ) ) {
                         toilet_ctrl_data.water_T_index--;
@@ -217,12 +158,10 @@ void issue_key_scanning ( void ) {
                 }
 				level_index_dirty = true;
 				level_index = toilet_ctrl_data.water_T_index;
-                show_display_segment ( DISP_mode_logo [ Clear_All_Logo ], sizeof ( DISP_mode_logo [ Clear_All_Logo ] ), false );
-                show_display_segment ( DISP_mode_logo [ Water_Tank_Temp_Logo ], sizeof ( DISP_mode_logo [ Water_Tank_Temp_Logo ] ), true );
             }
             else
                 if ( newest_press_key & ( 1 << SW2_toilet_seat_temp ) ) {
-                    //toilet_next_state = TOIET_SEAT_TEMP_STATE;
+                    toilet_next_state = TOIET_SEAT_TEMP_STATE;
                     if ( ( toilet_ctrl_data.toilet_seat_T_index & LEVEL_DIR_MASK  ) == INCREASE_LEVEL ) {
                       if ( ( toilet_ctrl_data.toilet_seat_T_index + 1 ) == ( sizeof ( toilet_seat_T_level ) / sizeof ( uint8_t ) ) ) {
                         toilet_ctrl_data.toilet_seat_T_index--;
@@ -241,8 +180,6 @@ void issue_key_scanning ( void ) {
                     }
 					level_index_dirty = true;
 					level_index = toilet_ctrl_data.toilet_seat_T_index;
-                    show_display_segment ( DISP_mode_logo [ Clear_All_Logo ], sizeof ( DISP_mode_logo [ Clear_All_Logo ] ), false );
-                    show_display_segment ( DISP_mode_logo [ Seat_Logo ], sizeof ( DISP_mode_logo [ Seat_Logo ] ), true );
                 }
                 else
                    if ( ( toilet_cur_state != TOIET_WASHING_STATE ) && ( toilet_cur_state != TOIET_SPRAYING_STATE ) && newest_press_key & ( 1 << SW8_fan_speed_temp ) ) {
@@ -278,8 +215,7 @@ void issue_key_scanning ( void ) {
                    else
                        if ( ( toilet_cur_state != TOIET_FAN_SPEED_TEMP_STATE ) && ( toilet_cur_state != TOIET_SPRAYING_STATE ) && newest_press_key & ( 1 << SW3_washing ) ) {
                            toilet_next_state = TOIET_WASHING_STATE;
-                           if ( toilet_cur_state != TOIET_WASHING_STATE )
-                               level_index_dirty = true;
+						   level_index_dirty = true;
 						   level_index = toilet_ctrl_data.washing_F_index;
                        }
                        else
@@ -322,14 +258,12 @@ void issue_key_scanning ( void ) {
                                        }
                                        else
                                            if ( toilet_cur_state == TOIET_FAN_SPEED_TEMP_STATE ) {
-                                               if ( toilet_ctrl_data.fan_T_index > 0 )
-                                                   toilet_ctrl_data.fan_T_index--;
-											   /*if ( !( toilet_ctrl_data.fan_T_index & ~LEVEL_DIR_MASK  ) ) {
+											   if ( !( toilet_ctrl_data.fan_T_index & ~LEVEL_DIR_MASK  ) ) {
 												   toilet_ctrl_data.fan_T_index ^= LEVEL_DIR_MASK;
 												   toilet_ctrl_data.fan_T_index++;
 											   }
 											   else
-												   toilet_ctrl_data.fan_T_index--;*/
+												   toilet_ctrl_data.fan_T_index--;
 											   level_index_dirty = true;
 											   level_index = toilet_ctrl_data.fan_T_index;
                                            }
@@ -344,16 +278,14 @@ void issue_key_scanning ( void ) {
                                            }
                                            else
                                                if ( toilet_cur_state == TOIET_FAN_SPEED_TEMP_STATE ) {
-                                                   if ( ( toilet_ctrl_data.fan_T_index + 1 ) < ( sizeof ( fan_T_S_level [ toilet_ctrl_data.fan_S_index ] ) / sizeof ( uint8_t ) ) )
-                                                       toilet_ctrl_data.fan_T_index++;
-												   /*if ( ( toilet_ctrl_data.fan_T_index & LEVEL_DIR_MASK  ) == INCREASE_LEVEL ) {
+												   if ( ( toilet_ctrl_data.fan_T_index & LEVEL_DIR_MASK  ) == INCREASE_LEVEL ) {
 													   if ( ( toilet_ctrl_data.fan_T_index + 1 ) == ( sizeof ( fan_T_S_level [ toilet_ctrl_data.fan_S_index ] ) / sizeof ( uint8_t ) ) ) {
 														   toilet_ctrl_data.fan_T_index--;
 														   toilet_ctrl_data.fan_T_index |= LEVEL_DIR_MASK;
 													   }
 													   else
 														   toilet_ctrl_data.fan_T_index++;
-												   }*/
+												   }
 												   level_index_dirty = true;
 												   level_index = toilet_ctrl_data.fan_T_index;
                                                }
@@ -382,6 +314,7 @@ uint16_t key_scanning ( void ) {
     key_scan_out1_SetLow();
     key_scan_out2_SetLow();
     key_scan_out3_SetLow();
+    //__delay_ms (10);
 	while ( i++ < 10 ) {
 		if ( !key_scan_in1_GetValue () )
 			scan_key_count [ 0 ]++;
@@ -405,21 +338,18 @@ uint16_t key_scanning ( void ) {
 			key_scan_out1_SetLow();
 			key_scan_out2_SetHigh();
 			key_scan_out3_SetHigh();
-            __delay_us (5);
 			if ( !key_scan_in1_GetValue () )
 				scan_key_count [ 0 ]++;
 
 			key_scan_out2_SetLow();
 			key_scan_out1_SetHigh();
-			key_scan_out3_SetHigh();
-            __delay_us (5);
+			//key_scan_out3_SetHigh();
 			if ( !key_scan_in1_GetValue () )
 				scan_key_count [ 1 ]++;
 
 			key_scan_out3_SetLow();
 			key_scan_out2_SetHigh();
-			key_scan_out1_SetHigh();
-            __delay_us (5);
+			//key_scan_out1_SetHigh();
 			if ( !key_scan_in1_GetValue () )
 				scan_key_count [ 2 ]++;
 		}
@@ -433,6 +363,7 @@ uint16_t key_scanning ( void ) {
 		if ( pressed_col == 0 ) {
 			press_key |= 1 << SW1_water_tank_temp;
             key_buf [ 0 ][ key_buf_tail_index ] = 1;
+            key_entry_count++;
         }
 		else
 			if ( pressed_col == 1 ) {
@@ -453,21 +384,18 @@ uint16_t key_scanning ( void ) {
 				key_scan_out1_SetLow();
 				key_scan_out2_SetHigh();
 				key_scan_out3_SetHigh();
-                __delay_us (5);
 				if ( !key_scan_in2_GetValue () )
 					scan_key_count [ 0 ]++;
 
 				key_scan_out2_SetLow();
 				key_scan_out1_SetHigh();
-				key_scan_out3_SetHigh();
-                __delay_us (5);
+				//key_scan_out3_SetHigh();
 				if ( !key_scan_in2_GetValue () )
 					scan_key_count [ 1 ]++;
 
 				key_scan_out3_SetLow();
 				key_scan_out2_SetHigh();
-				key_scan_out1_SetHigh();
-                __delay_us (5);
+				//key_scan_out1_SetHigh();
 				if ( !key_scan_in2_GetValue () )
 					scan_key_count [ 2 ]++;
 			}
@@ -500,14 +428,12 @@ uint16_t key_scanning ( void ) {
 					key_scan_out1_SetLow();
 					key_scan_out2_SetHigh();
 					key_scan_out3_SetHigh();
-                    __delay_us (5);
 					if ( !key_scan_in3_GetValue () )
 						scan_key_count [ 0 ]++;
 
 					key_scan_out2_SetLow();
 					key_scan_out1_SetHigh();
-					key_scan_out3_SetHigh();
-                    __delay_us (5);
+					//key_scan_out3_SetHigh();
 					if ( !key_scan_in3_GetValue () )
 						scan_key_count [ 1 ]++;
 				}
@@ -559,7 +485,7 @@ uint16_t key_scanning ( void ) {
 
 		}
 
-    if ( press_state == STOP_KEY_STATE ) {
+	if ( press_state == STOP_KEY_STATE ) {
 	if ( is_buf_full == true ) {
 		for ( i = 0; i < KEY_BUFFER_SIZE; i++ )
 			for ( j = 0 ; j < KEY_COUNT; j++ )
@@ -679,7 +605,6 @@ uint16_t key_scanning ( void ) {
 			key_buf_tail_index = 0;
 		if ( key_buf_head_index == KEY_BUFFER_SIZE )
 			key_buf_head_index = 0;
-
 #if 0
 	if ( candidate_key_index >= 0 ) {
 #ifdef debug_key_scanning
@@ -689,6 +614,9 @@ uint16_t key_scanning ( void ) {
             press_state = START_KEY_STATE;
             press_key = 1 << candidate_key_index;
             key_entry_count++;
+            is_buf_full = en_ring = false;
+            key_buf_tail_index = key_buf_head_index = 0;
+            return;
         }
         else
             press_key = 0;
@@ -763,9 +691,9 @@ void show_display_segment1 ( void )
 #endif
     memset ( i2c_data + 2, 0, sizeof ( disp_ram_map_data ) );
     I2C2_MasterWrite ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
-    __delay_ms ( 10 );
+    //__delay_ms ( 10 );
     I2C2_MasterRead ( i2c_data + 2, 10, I2C_HT16C21_ADDRESS, &i2c_status );
-    __delay_ms ( 10 );
+    //__delay_ms ( 10 );
     
 
     i2c_data [ 0 ] = I2C_HT16C21_CMD_SYSTEM_MODE;

@@ -122,7 +122,7 @@ void toilet_state_action ( void ) {
         /* do RF TX to transfer `toilet_ctrl_data` to host and refresh display */
         transmit_remote_data ( );
         is_need_refresh = false;
-        //show_display_segment1 ();
+        show_display_segment1 ();
     }    
     return;
     
@@ -167,13 +167,12 @@ void issue_key_scanning ( void ) {
             n_timer_off_count++;
         }
         else
-            if ( n_timer_off_count == n_timer_overflow_count ) {
+            if ( n_timer_off_count >= n_timer_overflow_count ) {
                 DISPLAY_OFF ();
                 i2c_data [ 0 ] = I2C_HT16C21_CMD_SYSTEM_MODE;
                 i2c_data [ 1 ] |= 0x00;  //system osc & lcd off
                 I2C2_MasterWrite ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
                 __delay_ms ( 10 );
-                n_timer_off_count++;
 /*#ifdef debug_HT16C21
                 I2C2_check_error ( i2c_status );
 #endif*/
@@ -405,21 +404,18 @@ uint16_t key_scanning ( void ) {
 			key_scan_out1_SetLow();
 			key_scan_out2_SetHigh();
 			key_scan_out3_SetHigh();
-            __delay_us (5);
 			if ( !key_scan_in1_GetValue () )
 				scan_key_count [ 0 ]++;
 
 			key_scan_out2_SetLow();
 			key_scan_out1_SetHigh();
-			key_scan_out3_SetHigh();
-            __delay_us (5);
+			//key_scan_out3_SetHigh();
 			if ( !key_scan_in1_GetValue () )
 				scan_key_count [ 1 ]++;
 
 			key_scan_out3_SetLow();
 			key_scan_out2_SetHigh();
-			key_scan_out1_SetHigh();
-            __delay_us (5);
+			//key_scan_out1_SetHigh();
 			if ( !key_scan_in1_GetValue () )
 				scan_key_count [ 2 ]++;
 		}
@@ -453,21 +449,18 @@ uint16_t key_scanning ( void ) {
 				key_scan_out1_SetLow();
 				key_scan_out2_SetHigh();
 				key_scan_out3_SetHigh();
-                __delay_us (5);
 				if ( !key_scan_in2_GetValue () )
 					scan_key_count [ 0 ]++;
 
 				key_scan_out2_SetLow();
 				key_scan_out1_SetHigh();
-				key_scan_out3_SetHigh();
-                __delay_us (5);
+				//key_scan_out3_SetHigh();
 				if ( !key_scan_in2_GetValue () )
 					scan_key_count [ 1 ]++;
 
 				key_scan_out3_SetLow();
 				key_scan_out2_SetHigh();
-				key_scan_out1_SetHigh();
-                __delay_us (5);
+				//key_scan_out1_SetHigh();
 				if ( !key_scan_in2_GetValue () )
 					scan_key_count [ 2 ]++;
 			}
@@ -500,14 +493,12 @@ uint16_t key_scanning ( void ) {
 					key_scan_out1_SetLow();
 					key_scan_out2_SetHigh();
 					key_scan_out3_SetHigh();
-                    __delay_us (5);
 					if ( !key_scan_in3_GetValue () )
 						scan_key_count [ 0 ]++;
 
 					key_scan_out2_SetLow();
 					key_scan_out1_SetHigh();
-					key_scan_out3_SetHigh();
-                    __delay_us (5);
+					//key_scan_out3_SetHigh();
 					if ( !key_scan_in3_GetValue () )
 						scan_key_count [ 1 ]++;
 				}
