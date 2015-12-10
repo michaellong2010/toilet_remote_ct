@@ -25,11 +25,15 @@ extern "C" {
 #define SW1_water_tank_temp 0
 #define SW2_toilet_seat_temp 1
 #define SW3_washing 2
-#define SW4_spraying 3
+#define SW4_lady_washing 3
 #define SW5_stop_all 4
-#define SW6_decrease 5
-#define SW7_increase 6
+#define SW6_large_spraying 5
+#define SW7_little_spraying 6
 #define SW8_fan_speed_temp 7
+//#define SW4_spraying 8
+//#define SW6_decrease 9
+//#define SW7_increase 10
+#define SW10_spa 9
 
 #define FAN_OFF 0
 #define FAN_ON 1
@@ -37,8 +41,18 @@ extern "C" {
 #define DECREASE_LEVEL 0x80
 #define LEVEL_DIR_MASK ( 1 << 7 )
 
+//washing type: none, male, female
+#define NONE_WASHING_TYPE -1
+#define MALE_WASHING_TYPE 0
+#define FEMALE_WASHING_TYPE 1
+
+	//washing type: none, large, little
+#define NONE_SPRAYING_TYPE -1
+#define LARGE_SPRAYING_TYPE 0
+#define LITTLE_SPRAYING_TYPE 1
+
 //for key buffer
-#define KEY_COUNT 8
+#define KEY_COUNT 11
 #define KEY_BUFFER_SIZE ( 1000 / 131 )
 #define ASSERT_TIMES_THRESHOLD (int)((double) ( 0.6 * 1000 / 131 ))
  
@@ -70,7 +84,8 @@ typedef enum {
     TOIET_SEAT_TEMP_STATE,
     TOIET_WASHING_STATE,
     TOIET_SPRAYING_STATE,
-    TOIET_FAN_SPEED_TEMP_STATE
+    TOIET_FAN_SPEED_TEMP_STATE,
+    TOIET_LADY_WASHING_STATE
 } TOIET_STATE;
 
 typedef enum {
@@ -84,6 +99,7 @@ uint8_t fan_T_S_level [][4] = { 'N', 40, 45, 50,  //fan speed1 temperature
                                    'N', 40, 45, 50 };  //fan speed2 temperature
 uint8_t washing_F_level [] = { 'N', 1, 2, 3 };  //washing force level
 uint8_t spraying_F_level [] = { 'N', 1, 2, 3 };
+uint8_t fan_S_level [] =  { 'N', 1, 2 };
 typedef struct {
     uint8_t water_T_index;  //water temperature
     uint8_t toilet_seat_T_index;  //toilet seat temperature
@@ -96,8 +112,14 @@ typedef struct {
     TOIET_STATE toilet_state;
     bool joystick_lock;
     bool spotlight_on_off;
+    
+    /*20151209 modified*/
+    int8_t washing_type;
+    uint8_t lady_washing_F_index;  //lady washing force level
+	int8_t spraying_type;
+	bool spa_en;
 } Toilet_Ctl_Data_t;
-Toilet_Ctl_Data_t toilet_ctrl_data = { 0, 0, FAN_OFF, 1, 0, 1, 0, 0, 0, TOIET_DUMMY_STATE, 0, 0 };
+Toilet_Ctl_Data_t toilet_ctrl_data = { 0, 0, FAN_OFF, 1, 0, 1, 0, 0, 0, TOIET_DUMMY_STATE, 0, 0, NONE_WASHING_TYPE, 1, NONE_SPRAYING_TYPE, false };
 extern volatile TOIET_STATE toilet_cur_state,toilet_last_state, toilet_next_state;
 extern volatile uint8_t lock;
 extern double Env_T;  //enviroment temperature;
