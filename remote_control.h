@@ -34,6 +34,7 @@ extern "C" {
 //#define SW6_decrease 9
 //#define SW7_increase 10
 #define SW10_spa 9
+#define SW11_washing_move 10
 
 #define FAN_OFF 0
 #define FAN_ON 1
@@ -99,7 +100,7 @@ uint8_t fan_T_S_level [][4] = { 'N', 40, 45, 50,  //fan speed1 temperature
                                    'N', 40, 45, 50 };  //fan speed2 temperature
 uint8_t washing_F_level [] = { 'N', 1, 2, 3 };  //washing force level
 uint8_t spraying_F_level [] = { 'N', 1, 2, 3 };
-uint8_t fan_S_level [] =  { 'N', 1, 2 };
+uint8_t fan_S_level [] =  { 'N', 1, 2, 3 };
 typedef struct {
     uint8_t water_T_index;  //water temperature
     uint8_t toilet_seat_T_index;  //toilet seat temperature
@@ -117,9 +118,9 @@ typedef struct {
     int8_t washing_type;
     uint8_t lady_washing_F_index;  //lady washing force level
 	int8_t spraying_type;
-	bool spa_en;
+	bool spa_en, washing_move_en;
 } Toilet_Ctl_Data_t;
-Toilet_Ctl_Data_t toilet_ctrl_data = { 0, 0, FAN_OFF, 1, 0, 1, 0, 0, 0, TOIET_DUMMY_STATE, 0, 0, NONE_WASHING_TYPE, 1, NONE_SPRAYING_TYPE, false };
+Toilet_Ctl_Data_t toilet_ctrl_data = { 0, 0, FAN_OFF, 0, 0, 0, 0, 0, 0, TOIET_DUMMY_STATE, 0, 0, NONE_WASHING_TYPE, 0, NONE_SPRAYING_TYPE, false, false };
 extern volatile TOIET_STATE toilet_cur_state,toilet_last_state, toilet_next_state;
 extern volatile uint8_t lock;
 extern double Env_T;  //enviroment temperature;
@@ -137,6 +138,7 @@ void remote_control_init ( void );
 void show_display_segment ( uint8_t *disp_seg, uint8_t len, bool is_show );
 void show_display_segment1 ( void );
 void toggle_lock ( void );
+void toggle_spotlight ( void );
 
 #ifdef	__cplusplus
 }

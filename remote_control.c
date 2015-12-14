@@ -107,16 +107,19 @@ void toilet_state_action ( void ) {
     routine_refresh_display = 0;
     }    
     
-    /*if ( toilet_cur_state == TOIET_WASHING_STATE || toilet_cur_state == TOIET_SPRAYING_STATE || toilet_cur_state == TOIET_FAN_SPEED_TEMP_STATE  ) {
-        if ( !lock ) {*/
+    if ( toilet_cur_state == TOIET_WASHING_STATE ) {
+        /*if ( rocker_lock_GetValue() == 1 ) {
+            toggle_lock ();
+        }*/
+        if ( !lock ) {
             /*fetch X & Y ADC, 0.4V~2.8V, 125~860*/
-            /*toilet_ctrl_data.X_coord_val = ADC_GetConversion( channel_AN0 );
-            toilet_ctrl_data.Y_coord_val = ADC_GetConversion( channel_AN1 );
-            is_need_refresh = true;
+			toilet_ctrl_data.X_coord_val = ADC_GetConversion( channel_AN0 );
+			toilet_ctrl_data.Y_coord_val = ADC_GetConversion( channel_AN1 );
+			is_need_refresh = true;
         }
-        else {
-        }
-    }*/
+        //else {
+        //}
+    }
     
     if ( is_need_refresh ) {
         /* do RF TX to transfer `toilet_ctrl_data` to host and refresh display */
@@ -144,9 +147,16 @@ void toilet_state_action ( void ) {
 
 void toggle_lock ( void ) {
     if ( lock == 0 )
-        lock = 0;
+        toilet_ctrl_data.joystick_lock = lock = 1;
     else
-        lock = 1;
+        toilet_ctrl_data.joystick_lock = lock = 0;
+}
+
+void toggle_spotlight ( void ) {
+	if ( toilet_ctrl_data.spotlight_on_off == false )
+		toilet_ctrl_data.spotlight_on_off = true;
+	else
+		toilet_ctrl_data.spotlight_on_off = false;
 }
 
 /* timer ISR to issue key scanning */
@@ -283,7 +293,7 @@ void issue_key_scanning ( void ) {
 							   toilet_ctrl_data.fan_S_index++;
 					   }
 					   else {
-						   if ( !( toilet_ctrl_data.fan_S_index & ~LEVEL_DIR_MASK  ) ) {
+						   if ( ( toilet_ctrl_data.fan_S_index & ~LEVEL_DIR_MASK  ) == 1 ) {
 							   toilet_ctrl_data.fan_S_index ^= LEVEL_DIR_MASK;
 							   toilet_ctrl_data.fan_S_index++;
 						   }
@@ -294,7 +304,7 @@ void issue_key_scanning ( void ) {
 					   level_index = toilet_ctrl_data.fan_S_index;
                    }
                    else
-                       if ( ( toilet_cur_state != TOIET_FAN_SPEED_TEMP_STATE ) && ( toilet_cur_state != TOIET_SPRAYING_STATE ) /*&& ( toilet_cur_state != TOIET_LADY_WASHING_STATE )*/ && newest_press_key & ( 1 << SW3_washing ) ) {
+                       if ( ( toilet_cur_state != TOIET_FAN_SPEED_TEMP_STATE ) && ( toilet_cur_state != TOIET_SPRAYING_STATE ) /*&& ( toilet_cur_state != TOIET_LADY_WASHING_STATE )*/ && newest_press_key & ( 1 << SW3_washing ) ) {						   
                            toilet_next_state = TOIET_WASHING_STATE;
 						   if ( toilet_ctrl_data.washing_type == NONE_WASHING_TYPE )
 							   toilet_ctrl_data.washing_type = MALE_WASHING_TYPE;
@@ -315,7 +325,10 @@ void issue_key_scanning ( void ) {
 								   else
 									   toilet_ctrl_data.washing_F_index--;
 							   }
-							   //if ( toilet_cur_state != TOIET_WASHING_STATE )
+							   if ( toilet_cur_state != TOIET_WASHING_STATE ) {
+								   lock = toilet_ctrl_data.joystick_lock = 0;
+								   IOCB5 = 1;
+							   }
 							   level_index_dirty = true;
 							   level_index = toilet_ctrl_data.washing_F_index;
 						   }
@@ -359,7 +372,10 @@ void issue_key_scanning ( void ) {
 									   else
 										   toilet_ctrl_data.lady_washing_F_index--;
 								   }
-								   //if ( toilet_cur_state != TOIET_LADY_WASHING_STATE )
+								   if ( toilet_cur_state != TOIET_WASHING_STATE ) {
+									   lock = toilet_ctrl_data.joystick_lock = 0;
+									   IOCB5 = 1;
+								   }
 								   level_index_dirty = true;
 								   level_index = toilet_ctrl_data.lady_washing_F_index;
 							   }
@@ -373,7 +389,8 @@ void issue_key_scanning ( void ) {
                                    }
 								   //if ( toilet_ctrl_data.washing_type != NONE_WASHING_TYPE )
 									   toilet_ctrl_data.washing_type = NONE_WASHING_TYPE;
-									   toilet_ctrl_data.spraying_type = NONE_SPRAYING_TYPE;
+									   toilet_ctrl_data.spraying_type = NONE_SPRAYING_TYPE;\
+								   IOCB5 = 0;
 								   level_index_dirty = true;
 								   level_index = -1;
                                }
@@ -446,6 +463,17 @@ void issue_key_scanning ( void ) {
 											   }
 											   level_index_dirty = true;  //fire update
 										   }
+                                           else
+                                               if ( newest_press_key & ( 1 << SW11_washing_move ) ) {
+												   if ( toilet_cur_state == TOIET_WASHING_STATE ) {
+													   if ( toilet_ctrl_data.washing_move_en == false )
+														   toilet_ctrl_data.washing_move_en = true;
+													   else
+														   if ( toilet_ctrl_data.washing_move_en == true )
+															   toilet_ctrl_data.washing_move_en = false;
+												   }
+												   level_index_dirty = true;  //fire update                                               
+                                               }
     }
 #endif    
     /*if ( toilet_cur_state != toilet_next_state ) {
@@ -459,16 +487,25 @@ uint16_t key_scanning ( void ) {
     uint8_t volatile key_in1, key_in2, key_in3;
     uint16_t press_key = 0, i = 0, j = 0, Max_Hist, Max_Scan_Key_Count;
 	static uint16_t key_buf [ KEY_COUNT ][ KEY_BUFFER_SIZE ], key_buf_head_index = 0, key_buf_tail_index = 0, key_buf_hist [ KEY_COUNT ] = { 0 }, key_entry_count = 0, key_entry_count1 = 0;
-	int16_t candidate_key_index = -1, scan_key_count [ 3 ] = { 0 }, pressed_row, pressed_col;
+	int16_t candidate_key_index = -1, scan_key_count [ 3 ] = { 0 }, single_key_count = 0, pressed_row, pressed_col;
 	static bool is_buf_full = false, en_ring = false;
     static KEY_SCAN_STATE press_state = STOP_KEY_STATE;
 
-	scan_key_count [ 0 ] = scan_key_count [ 1 ] = scan_key_count [ 2 ] = 0;
+	single_key_count = scan_key_count [ 0 ] = scan_key_count [ 1 ] = scan_key_count [ 2 ] = 0;
     //key_buf [ 7 ][ key_buf_tail_index ] = key_buf [ 6 ][ key_buf_tail_index ] = key_buf [ 5 ][ key_buf_tail_index ] = key_buf [ 4 ][ key_buf_tail_index ] = key_buf [ 3 ][ key_buf_tail_index ] = key_buf [ 2 ][ key_buf_tail_index ] = key_buf [ 1 ][ key_buf_tail_index ] = key_buf [ 0 ][ key_buf_tail_index ] = 0;
 	for ( i = 0; i < KEY_COUNT; i++ )
 		key_buf [ i ][ key_buf_tail_index ] = 0;
     if ( key_buf_tail_index == key_buf_head_index )
         memset ( key_buf, 0, sizeof ( key_buf ) );
+    
+    /*20151211 modified*/
+    i = 0;
+    while ( i++ < 5 ) {
+        if ( !washing_move_GetValue () )
+            single_key_count++;
+    }
+    if ( single_key_count == 5 )
+        key_buf [ SW11_washing_move ][ key_buf_tail_index ] = 1;
     key_scan_out1_SetLow();
     key_scan_out2_SetLow();
     key_scan_out3_SetLow();
@@ -628,7 +665,7 @@ uint16_t key_scanning ( void ) {
 					else
 					if ( pressed_col == 2 ) {
 						press_key |= 1 << SW10_spa;
-                        key_buf [ 8 ][ key_buf_tail_index ] = 1;
+                        key_buf [ SW10_spa ][ key_buf_tail_index ] = 1;
                     }
 			}
 			else
@@ -700,7 +737,7 @@ uint16_t key_scanning ( void ) {
         }
     }
     
-	for ( i = 0, candidate_key_index = -1, Max_Hist = ( uint16_t ) ASSERT_TIMES_THRESHOLD - 2; i < KEY_COUNT; i++ )
+	for ( i = 0, candidate_key_index = -1, Max_Hist = ( uint16_t ) ASSERT_TIMES_THRESHOLD - 3; i < KEY_COUNT; i++ )
 		if ( key_buf_hist [ i ] >= Max_Hist ) {
 			Max_Hist = key_buf_hist [ i ];
 			candidate_key_index = i;
@@ -746,7 +783,7 @@ uint16_t key_scanning ( void ) {
 							key_buf_hist [ j ]--;
 				}
 			}
-			for ( i = 0, candidate_key_index = -1, Max_Hist = ( uint16_t ) ASSERT_TIMES_THRESHOLD - 2; i < KEY_COUNT; i++ )
+			for ( i = 0, candidate_key_index = -1, Max_Hist = ( uint16_t ) ASSERT_TIMES_THRESHOLD - 3; i < KEY_COUNT; i++ )
 				if ( key_buf_hist [ i ] >= Max_Hist ) {
 					Max_Hist = key_buf_hist [ i ];
 					candidate_key_index = i;

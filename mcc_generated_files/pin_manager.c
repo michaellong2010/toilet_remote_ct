@@ -46,6 +46,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 #include <xc.h>
 #include "pin_manager.h"
+#include "../remote_control.h"
 
 void PIN_MANAGER_Initialize(void) {
     LATA = 0x20;
@@ -55,7 +56,7 @@ void PIN_MANAGER_Initialize(void) {
     LATB = 0x06;
     TRISB = 0xEF;
     ANSELB = 0x01;
-    WPUB = 0x20;
+    WPUB = 0x80;
 
     LATC = 0x07;
     TRISC = 0xD0;
@@ -65,19 +66,27 @@ void PIN_MANAGER_Initialize(void) {
 
     // enable interrupt-on-change individually    
     IOCB5 = 0;
+    IOCB7 = 1;
 
     // enable interrupt-on-change globally
-    INTCONbits.RBIE = 0;
+    INTCONbits.RBIE = 1;
 
 }
 
 void PIN_MANAGER_IOC(void) {
     if ((IOCB5 == 1) && (RBIF == 1)) {
         //@TODO Add handling code for IOC on pin RB5
-
+        if ( !rocker_lock_GetValue () )
+            toggle_lock ();
         // clear interrupt-on-change flag
         RBIF = 0;
-        //toggle_lock ();
+    } else if ((IOCB7 == 1) && (RBIF == 1)) {
+        //@TODO Add handling code for IOC on pin RB7
+        if ( spotlight_GetValue () == 0 ) {
+            toggle_spotlight ();
+        }
+        // clear interrupt-on-change flag
+        RBIF = 0;
     }
 }
 /**

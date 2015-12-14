@@ -134,7 +134,7 @@ void TMR0_ISR(void) {
         CountCallBack = 0;
     }
     else 
-        if (++CountCallBack1 >= 1000) {
+        if (++CountCallBack1 >= 10000) {
             CountCallBack1 = 0;
             routine_refresh_display = 1;
         }

@@ -247,6 +247,20 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define rocker_lock_ResetPullup()   do { WPUB5 = 0; } while(0)
 #define rocker_lock_SetAnalogMode()   do { ANSB5 = 1; } while(0)
 #define rocker_lock_SetDigitalMode()   do { ANSB5 = 0; } while(0)
+// get/set spotlight aliases
+#define spotlight_TRIS               TRISB7
+#define spotlight_LAT                LATB7
+#define spotlight_PORT               PORTBbits.RB7
+#define spotlight_WPU                WPUB7
+#define spotlight_SetHigh()    do { LATB7 = 1; } while(0)
+#define spotlight_SetLow()   do { LATB7 = 0; } while(0)
+#define spotlight_Toggle()   do { LATB7 = ~LATB7; } while(0)
+#define spotlight_GetValue()         PORTBbits.RB7
+#define spotlight_SetDigitalInput()    do { TRISB7 = 1; } while(0)
+#define spotlight_SetDigitalOutput()   do { TRISB7 = 0; } while(0)
+
+#define spotlight_SetPullup()    do { WPUB7 = 1; } while(0)
+#define spotlight_ResetPullup()   do { WPUB7 = 0; } while(0)
 // get/set key_scan_out1 aliases
 #define key_scan_out1_TRIS               TRISC0
 #define key_scan_out1_LAT                LATC0
@@ -353,6 +367,10 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 #define RX1_SetAnalogMode()   do { ANSC7 = 1; } while(0)
 #define RX1_SetDigitalMode()   do { ANSC7 = 0; } while(0)
+// get/set washing_move aliases
+#define washing_move_PORT               PORTEbits.RE3
+#define washing_move_GetValue()         PORTEbits.RE3
+
 
 /**
  * @Param
