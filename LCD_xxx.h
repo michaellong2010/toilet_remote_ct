@@ -196,3 +196,8 @@ S_Y3, S_Y3,
 S_Y4, S_Y4,
 S_Y3, S_Y4 //clear all logo
 };
+
+#define Spotlight_Logo 0
+uint8_t DISP_misc_logo [] = {
+    S_X9
+};

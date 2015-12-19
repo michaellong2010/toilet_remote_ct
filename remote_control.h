@@ -118,9 +118,10 @@ typedef struct {
     int8_t washing_type;
     uint8_t lady_washing_F_index;  //lady washing force level
 	int8_t spraying_type;
-	bool spa_en, washing_move_en;
+	bool spa_en, washing_move_en, is_hold_state;
+	uint8_t state_change_count;
 } Toilet_Ctl_Data_t;
-Toilet_Ctl_Data_t toilet_ctrl_data = { 0, 0, FAN_OFF, 0, 0, 0, 0, 0, 0, TOIET_DUMMY_STATE, 0, 0, NONE_WASHING_TYPE, 0, NONE_SPRAYING_TYPE, false, false };
+Toilet_Ctl_Data_t toilet_ctrl_data = { 0, 0, FAN_OFF, 0, 0, 0, 0, 0, 0, TOIET_DUMMY_STATE, 0, 0, NONE_WASHING_TYPE, 0, NONE_SPRAYING_TYPE, false, false, true, 0 };
 extern volatile TOIET_STATE toilet_cur_state,toilet_last_state, toilet_next_state;
 extern volatile uint8_t lock;
 extern double Env_T;  //enviroment temperature;

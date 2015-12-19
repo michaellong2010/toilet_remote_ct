@@ -61,7 +61,17 @@ void toilet_state_action ( void ) {
 			//show_display_segment1 ();
         //}
         //is_need_redraw = true;
+		toilet_ctrl_data.is_hold_state = false;
+		toilet_ctrl_data.state_change_count = 0;
     }
+	else {
+		if ( toilet_ctrl_data.state_change_count > 10 )
+			toilet_ctrl_data.is_hold_state = true;
+		else {
+			is_need_refresh = true;
+			toilet_ctrl_data.state_change_count++;
+		}
+	}
 
 	if ( level_index_dirty ) {
 		//display water&seat&fan&spray temperature level
@@ -107,7 +117,7 @@ void toilet_state_action ( void ) {
     routine_refresh_display = 0;
     }    
     
-    if ( toilet_cur_state == TOIET_WASHING_STATE ) {
+    if ( toilet_cur_state == TOIET_WASHING_STATE || toilet_cur_state == TOIET_SPRAYING_STATE ) {
         /*if ( rocker_lock_GetValue() == 1 ) {
             toggle_lock ();
         }*/
@@ -150,13 +160,19 @@ void toggle_lock ( void ) {
         toilet_ctrl_data.joystick_lock = lock = 1;
     else
         toilet_ctrl_data.joystick_lock = lock = 0;
+	level_index_dirty = true;
 }
 
 void toggle_spotlight ( void ) {
-	if ( toilet_ctrl_data.spotlight_on_off == false )
+    //level_index_dirty = true;
+	if ( toilet_ctrl_data.spotlight_on_off == false ) {
 		toilet_ctrl_data.spotlight_on_off = true;
-	else
+        show_display_segment ( &DISP_misc_logo [ Spotlight_Logo ], 1, true );
+    }
+	else {
 		toilet_ctrl_data.spotlight_on_off = false;
+        show_display_segment ( &DISP_misc_logo [ Spotlight_Logo ], 1, false );
+    }
 }
 
 /* timer ISR to issue key scanning */
@@ -256,7 +272,7 @@ void issue_key_scanning ( void ) {
                 }
                 else
                    if ( ( toilet_cur_state != TOIET_WASHING_STATE ) && ( toilet_cur_state != TOIET_SPRAYING_STATE ) && newest_press_key & ( 1 << SW8_fan_speed_temp ) ) {
-                       toilet_next_state = TOIET_FAN_SPEED_TEMP_STATE;
+					   toilet_next_state = TOIET_FAN_SPEED_TEMP_STATE;
                        toilet_ctrl_data.fan_on_off = FAN_ON;
  
                        /*if ( ( toilet_ctrl_data.fan_T_index & LEVEL_DIR_MASK  ) == INCREASE_LEVEL ) {
@@ -302,10 +318,11 @@ void issue_key_scanning ( void ) {
 					   }
 					   level_index_dirty = true;
 					   level_index = toilet_ctrl_data.fan_S_index;
+					   toilet_cur_state = TOIET_DUMMY_STATE;
                    }
                    else
-                       if ( ( toilet_cur_state != TOIET_FAN_SPEED_TEMP_STATE ) && ( toilet_cur_state != TOIET_SPRAYING_STATE ) /*&& ( toilet_cur_state != TOIET_LADY_WASHING_STATE )*/ && newest_press_key & ( 1 << SW3_washing ) ) {						   
-                           toilet_next_state = TOIET_WASHING_STATE;
+					   if ( ( toilet_cur_state != TOIET_FAN_SPEED_TEMP_STATE ) && ( toilet_cur_state != TOIET_SPRAYING_STATE ) /*&& ( toilet_cur_state != TOIET_LADY_WASHING_STATE )*/ && newest_press_key & ( 1 << SW3_washing ) ) {
+						   toilet_next_state = TOIET_WASHING_STATE;
 						   if ( toilet_ctrl_data.washing_type == NONE_WASHING_TYPE )
 							   toilet_ctrl_data.washing_type = MALE_WASHING_TYPE;
 						   if ( toilet_ctrl_data.washing_type != FEMALE_WASHING_TYPE ) {
@@ -332,6 +349,7 @@ void issue_key_scanning ( void ) {
 							   level_index_dirty = true;
 							   level_index = toilet_ctrl_data.washing_F_index;
 						   }
+						   toilet_cur_state = TOIET_DUMMY_STATE;
                        }
                        else
                            if ( ( toilet_cur_state != TOIET_FAN_SPEED_TEMP_STATE ) && ( toilet_cur_state != TOIET_SPRAYING_STATE ) /*&& ( toilet_cur_state != TOIET_WASHING_STATE )*/ && newest_press_key & ( 1 << SW4_lady_washing ) ) {
@@ -379,6 +397,7 @@ void issue_key_scanning ( void ) {
 								   level_index_dirty = true;
 								   level_index = toilet_ctrl_data.lady_washing_F_index;
 							   }
+							   toilet_cur_state = TOIET_DUMMY_STATE;
                            }
                            else
                                if ( newest_press_key & ( 1 << SW5_stop_all ) ) {
@@ -393,6 +412,7 @@ void issue_key_scanning ( void ) {
 								   IOCB5 = 0;
 								   level_index_dirty = true;
 								   level_index = -1;
+								   //toilet_cur_state = TOIET_DUMMY_STATE;
                                }
                                else
                                    if ( ( toilet_cur_state != TOIET_FAN_SPEED_TEMP_STATE ) && ( toilet_cur_state != TOIET_WASHING_STATE ) && newest_press_key & ( 1 << SW6_large_spraying ) ) {
@@ -419,8 +439,13 @@ void issue_key_scanning ( void ) {
 										   toilet_next_state = TOIET_SPRAYING_STATE;
 										   toilet_ctrl_data.spraying_type = LARGE_SPRAYING_TYPE;
 									   }
+									   if ( toilet_cur_state != TOIET_SPRAYING_STATE ) {
+										   lock = toilet_ctrl_data.joystick_lock = 0;
+										   IOCB5 = 1;
+									   }
 									   level_index_dirty = true;
 									   level_index = -1;
+									   toilet_cur_state = TOIET_DUMMY_STATE;
                                    }
                                    else
                                        if ( ( toilet_cur_state != TOIET_FAN_SPEED_TEMP_STATE ) && ( toilet_cur_state != TOIET_WASHING_STATE ) && newest_press_key & ( 1 << SW7_little_spraying ) ) {
@@ -449,8 +474,13 @@ void issue_key_scanning ( void ) {
 											   toilet_next_state = TOIET_SPRAYING_STATE;
 											   toilet_ctrl_data.spraying_type = LITTLE_SPRAYING_TYPE;
 										   }
+										   if ( toilet_cur_state != TOIET_SPRAYING_STATE ) {
+											   lock = toilet_ctrl_data.joystick_lock = 0;
+											   IOCB5 = 1;
+										   }
 										   level_index_dirty = true;
 										   level_index = -1;
+										   toilet_cur_state = TOIET_DUMMY_STATE;
                                        }
 									   else
 										   if ( newest_press_key & ( 1 << SW10_spa ) ) {
@@ -506,6 +536,15 @@ uint16_t key_scanning ( void ) {
     }
     if ( single_key_count == 5 )
         key_buf [ SW11_washing_move ][ key_buf_tail_index ] = 1;
+
+    i = single_key_count = 0;
+    while ( i++ < 5 ) {
+        if ( !spotlight_GetValue () )
+            single_key_count++;
+    }
+    if ( single_key_count == 5 )
+        toggle_spotlight ();
+    
     key_scan_out1_SetLow();
     key_scan_out2_SetLow();
     key_scan_out3_SetLow();
