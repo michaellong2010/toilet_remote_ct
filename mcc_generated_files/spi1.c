@@ -64,11 +64,11 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 void SPI1_Initialize(void) {
     // Set the SPI1 module to the options selected in the User Interface
 
-    // BF RCinprocess_TXcomplete; UA dontupdate; SMP Sample At Middle; P stopbit_notdetected; S startbit_notdetected; R_nW write_noTX; CKE Idle to Active; D_nA lastbyte_address; 
-    SSP1STAT = 0x00;
+    // BF RCinprocess_TXcomplete; UA dontupdate; SMP Sample At Middle; P stopbit_notdetected; S startbit_notdetected; R_nW write_noTX; CKE Active to Idle; D_nA lastbyte_address; 
+    SSP1STAT = 0x40;
 
-    // SSPEN enabled; WCOL no_collision; SSPOV no_overflow; CKP Idle:Low, Active:High; SSPM FOSC/4; 
-    SSP1CON1 = 0x20;
+    // SSPEN enabled; WCOL no_collision; SSPOV no_overflow; CKP Idle:Low, Active:High; SSPM FOSC/16; 
+    SSP1CON1 = 0x21;
 
     // SSP1ADD 0; 
     SSP1ADD = 0x00;

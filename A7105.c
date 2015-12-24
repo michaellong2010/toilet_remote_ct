@@ -87,10 +87,10 @@ void A7105_Reset(void) {
 void ByteSend(Uint8 src) {
     uint8_t n_bytes;
 
-    MSPI_CS_SetLow();
+    //MSPI_CS_SetLow();
     SPI_MOSI_buf [ 0 ] = src;
     n_bytes = SPI1_Exchange8bitBuffer(SPI_MOSI_buf, 1, NULL);
-    MSPI_CS_SetHigh();
+    //MSPI_CS_SetHigh();
 }
 
 /************************************************************************
@@ -100,11 +100,11 @@ Uint8 ByteRead(void) {
     Uint8 i, tmp;
     uint8_t n_bytes;
 
-    MSPI_CS_SetLow();
+    //MSPI_CS_SetLow();
     SPI_MOSI_buf [ 0 ] = DUMMY_DATA;
     n_bytes = SPI1_Exchange8bitBuffer(SPI_MOSI_buf, 1, SPI_MISO_buf);
     tmp = SPI_MISO_buf [ 0 ];
-    MSPI_CS_SetHigh();
+    //MSPI_CS_SetHigh();
     return tmp;
 }
 
@@ -118,8 +118,8 @@ Uint8 A7105_ReadReg(Uint8 addr)
 
     MSPI_CS_SetLow();
     SPI_MOSI_buf [ 0 ] = addr | 0x40;
-    n_bytes = SPI1_Exchange8bitBuffer(SPI_MOSI_buf, 1, SPI_MISO_buf);
-    tmp = SPI_MISO_buf [ 0 ];
+    n_bytes = SPI1_Exchange8bitBuffer(SPI_MOSI_buf, 2, SPI_MISO_buf);
+    tmp = SPI_MISO_buf [ 1 ];
     MSPI_CS_SetHigh();
     return tmp;
 }
@@ -135,18 +135,22 @@ bool A7105_WriteID(void) {
     Uint8 addr;
 
     addr = IDCODE_REG; //send address 0x06, bit cmd=0, r/w=0
+    MSPI_CS_SetLow();
     ByteSend(addr);
     for (i = 0; i < 4; i++)
         ByteSend(ID_Tab[i]);
+    MSPI_CS_SetHigh();
 
     //for check
     addr = IDCODE_REG | 0x40; //send address 0x06, bit cmd=0, r/w=1
+    MSPI_CS_SetLow();
     ByteSend(addr);
     d1 = d2 = d3 = d4 = 0;
     d1 = ByteRead();
     d2 = ByteRead();
     d3 = ByteRead();
     d4 = ByteRead();
+    MSPI_CS_SetHigh();
     if ( d1 != ID_Tab[ 0 ]  || d2 != ID_Tab[ 1 ] || d3 != ID_Tab[ 2 ] || d4 != ID_Tab[ 3 ] )
         return false;
     return true;
@@ -314,7 +318,7 @@ bool A7105_SpiTest ( void )
     A7105_Reset(); //reset A7105 RF chip
     //spi 3-wire configure R8/NC, R9/0ohm; 4-wire configure R8/0ohm, R9/NC
 //#ifdef SPI_4_WIRE
-    A7105_WriteReg ( GPIO1_REG, 0x19 );
+    A7105_WriteReg ( GPIO1_REG, 0x11 );
 //#endif
     if ( A7105_WriteID ( ))
        SpiRW_test_status = true; 

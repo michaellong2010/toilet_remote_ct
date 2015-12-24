@@ -26,9 +26,8 @@
             <resource customName="SDO1" digital="true" direction="OUTPUT" function="SDO1" module="MSSP1" name="RC5" start="false" type="pin" wpu="false"/>
             <resource customName="TX1" digital="true" direction="INPUT" function="TX1" module="EUSART1" name="RC6" start="false" type="pin" wpu="false"/>
             <resource customName="RX1" digital="true" direction="INPUT" function="RX1" module="EUSART1" name="RC7" start="false" type="pin" wpu="false"/>
-            <resource customName="washing_move" digital="true" direction="INPUT" function="RE3" module="GPIO" name="RE3" start="false" type="pin" wpu="false"/>
-            <file checksum="650776994" modified="false" name="pin_manager.c" path="mcc_generated_files/pin_manager.c"/>
-            <file checksum="1036351145" modified="false" name="pin_manager.h" path="mcc_generated_files/pin_manager.h"/>
+            <file checksum="3723073862" modified="true" name="pin_manager.c" path="mcc_generated_files/pin_manager.c"/>
+            <file checksum="3033942696" modified="false" name="pin_manager.h" path="mcc_generated_files/pin_manager.h"/>
         </manager>
         <manager generated="true" name="System" reloadPin="manual">
             <initializer comment="" name="Initialize">
@@ -59,7 +58,7 @@
             <setting name="HFOFST" option="ON"/>
             <setting name="PBADEN" option="ON"/>
             <setting name="CCP3MX" option="PORTB5"/>
-            <setting name="MCLRE" option="INTMCLR"/>
+            <setting name="MCLRE" option="EXTMCLR"/>
             <setting name="T3CMX" option="PORTC0"/>
             <setting name="LVP" option="OFF"/>
             <setting name="STVREN" option="ON"/>
@@ -84,7 +83,7 @@
             <setting name="EBTR0" option="OFF"/>
             <setting name="EBTRB" option="OFF"/>
             <setting name="generateConfigBits" option="true"/>
-            <file checksum="671108704" modified="false" name="mcc.c" path="mcc_generated_files/mcc.c"/>
+            <file checksum="1724993470" modified="false" name="mcc.c" path="mcc_generated_files/mcc.c"/>
             <file checksum="4172622737" modified="false" name="mcc.h" path="mcc_generated_files/mcc.h"/>
         </manager>
         <manager generated="true" name="Interrupt Manager" reloadPin="manual">
@@ -108,13 +107,13 @@
                 <setting name="P" option="stopbit_notdetected" register="SSP1STAT"/>
                 <setting name="S" option="startbit_notdetected" register="SSP1STAT"/>
                 <setting name="R_nW" option="write_noTX" register="SSP1STAT"/>
-                <setting name="CKE" option="Idle to Active" register="SSP1STAT"/>
+                <setting name="CKE" option="Active to Idle" register="SSP1STAT"/>
                 <setting name="D_nA" option="lastbyte_address" register="SSP1STAT"/>
                 <setting name="SSPEN" option="enabled" register="SSP1CON1"/>
                 <setting name="WCOL" option="no_collision" register="SSP1CON1"/>
                 <setting name="SSPOV" option="no_overflow" register="SSP1CON1"/>
                 <setting name="CKP" option="Idle:Low, Active:High" register="SSP1CON1"/>
-                <setting name="SSPM" option="FOSC/4" register="SSP1CON1"/>
+                <setting name="SSPM" option="FOSC/16" register="SSP1CON1"/>
                 <setting name="SSP1ADD" option="0" register="SSP1ADD"/>
                 <additionalSetting name="frequency" option="16.0 MHz"/>
             </initializer>
@@ -123,7 +122,7 @@
             <setting name="BCLI" option="false"/>
             <setting name="WriteBufferSize" option="8"/>
             <setting name="ReadBufferSize" option="8"/>
-            <file checksum="3382203578" modified="false" name="spi1.c" path="mcc_generated_files/spi1.c"/>
+            <file checksum="3823916274" modified="false" name="spi1.c" path="mcc_generated_files/spi1.c"/>
             <file checksum="2993485301" modified="true" name="spi1.h" path="mcc_generated_files/spi1.h"/>
         </module>
         <module generated="true" mode="GPIO" name="GPIO" order="1" reloadPin="manual" type="GPIO">
@@ -137,7 +136,6 @@
             <resource customName="key_scan_out3" digital="true" direction="OUTPUT" function="RC2" module="GPIO" name="RC2" start="true" type="pin" wpu="false"/>
             <resource customName="env_temp_en" digital="true" direction="INPUT" function="RB3" module="GPIO" name="RB3" start="false" type="pin" wpu="false"/>
             <resource customName="backlight" digital="true" direction="OUTPUT" function="RB4" ioc="0" module="GPIO" name="RB4" start="false" type="pin" wpu="false"/>
-            <resource customName="washing_move" digital="true" direction="INPUT" function="RE3" module="GPIO" name="RE3" start="false" type="pin" wpu="false"/>
             <resource customName="spotlight" digital="true" direction="INPUT" function="RB7" ioc="4" module="GPIO" name="RB7" start="false" type="pin" wpu="true"/>
         </module>
         <module generated="true" mode="Timer" name="TMR0" order="2" reloadPin="manual" type="tmr_timer0">

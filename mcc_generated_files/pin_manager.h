@@ -367,10 +367,6 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 #define RX1_SetAnalogMode()   do { ANSC7 = 1; } while(0)
 #define RX1_SetDigitalMode()   do { ANSC7 = 0; } while(0)
-// get/set washing_move aliases
-#define washing_move_PORT               PORTEbits.RE3
-#define washing_move_GetValue()         PORTEbits.RE3
-
 
 /**
  * @Param
