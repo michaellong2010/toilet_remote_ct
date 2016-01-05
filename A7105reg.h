@@ -100,6 +100,14 @@ void A7105_Config(void);
 Uint8 A7105_ReadReg(Uint8 addr);
 void SetCH(Uint8);
 bool A7105_SpiTest ( void );
+void A7105_transmit_master ( void );
+void A7105_transmit_slave ( void );
+void A7105_WriteFIFO(void);
+void FrequencyCal(void);
+void RxPacket ( void );
+extern volatile Uint8 A7105_timer;
+
+#define GPIO1 0
 
 #ifdef	__cplusplus
 }

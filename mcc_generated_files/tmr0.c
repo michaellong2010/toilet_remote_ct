@@ -51,6 +51,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include <xc.h>
 #include "tmr0.h"
 #include "../remote_control.h"
+#include "../A7105reg.h"
 
 /**
   Section: Global Variables Definitions
@@ -138,6 +139,7 @@ void TMR0_ISR(void) {
             CountCallBack1 = 0;
             routine_refresh_display = 1;
         }
+    A7105_timer++;
 
     // add your TMR0 interrupt custom code
 }

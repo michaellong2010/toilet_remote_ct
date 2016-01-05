@@ -78,7 +78,9 @@ extern "C" {
 //define macro for debug use
 #define debug_HT16C21 1  //debug step1
 #define debug_key_scanning 1  //debug ky scan
-#define debug_A7105_SPI 1  //debug A7105 SPI R/W
+//#define debug_A7105_SPI 1  //debug A7105 SPI R/W
+//#define debug_A7105_MASTER 1  //A7105 is half duplex
+//#define debug_A7105_SLAVE 1
 typedef enum {
     TOIET_DUMMY_STATE,
     TOIET_WATER_TEMP_STATE,

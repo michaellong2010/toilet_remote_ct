@@ -535,13 +535,13 @@ uint16_t key_scanning ( void ) {
         memset ( key_buf, 0, sizeof ( key_buf ) );
     
     /*20151211 modified*/
-    /*i = 0;
+    i = 0;
     while ( i++ < 5 ) {
         if ( !washing_move_GetValue () )
             single_key_count++;
     }
     if ( single_key_count == 5 )
-        key_buf [ SW11_washing_move ][ key_buf_tail_index ] = 1;*/
+        key_buf [ SW11_washing_move ][ key_buf_tail_index ] = 1;
 
     /*i = single_key_count = 0;
     while ( i++ < 5 ) {
@@ -1058,10 +1058,16 @@ void remote_control_init ( void )
     show_display_segment1 ();
 
     //start timer0
-    //TMR0_StartTimer( );
+    TMR0_StartTimer( );
 #endif
 #ifdef debug_A7105_SPI
     if ( A7105_SpiTest () == true )
         while ( 1 );
+/*#endif
+        
+#if defined ( debug_A7105_MASTER ) && !defined( debug_A7105_SLAVE )
+        A7105_transmit_master ( );
+#elif !defined ( debug_A7105_MASTER ) && defined( debug_A7105_SLAVE )
+        A7105_transmit_slave ( );*/
 #endif
 }
