@@ -53,7 +53,7 @@
             <setting name="BORV" option="190"/>
             <setting name="PWRTEN" option="OFF"/>
             <setting name="WDTPS" option="32768"/>
-            <setting name="WDTEN" option="ON"/>
+            <setting name="WDTEN" option="OFF"/>
             <setting name="CCP2MX" option="PORTC1"/>
             <setting name="P2BMX" option="PORTB5"/>
             <setting name="HFOFST" option="ON"/>
@@ -84,7 +84,7 @@
             <setting name="EBTR0" option="OFF"/>
             <setting name="EBTRB" option="OFF"/>
             <setting name="generateConfigBits" option="true"/>
-            <file checksum="3538176579" modified="false" name="mcc.c" path="mcc_generated_files/mcc.c"/>
+            <file checksum="671108704" modified="false" name="mcc.c" path="mcc_generated_files/mcc.c"/>
             <file checksum="4172622737" modified="false" name="mcc.h" path="mcc_generated_files/mcc.h"/>
         </manager>
         <manager generated="true" name="Interrupt Manager" reloadPin="manual">

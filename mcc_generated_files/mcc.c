@@ -60,7 +60,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 // CONFIG2H
 #pragma config WDTPS = 32768    // Watchdog Timer Postscale Select bits->1:32768
-#pragma config WDTEN = ON    // Watchdog Timer Enable bits->WDT is always enabled. SWDTEN bit has no effect
+#pragma config WDTEN = OFF    // Watchdog Timer Enable bits->Watch dog timer is always disabled. SWDTEN has no effect.
 
 // CONFIG3H
 #pragma config CCP2MX = PORTC1    // CCP2 MUX bit->CCP2 input/output is multiplexed with RC1

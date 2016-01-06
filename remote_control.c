@@ -69,11 +69,18 @@ void toilet_state_action ( void ) {
 			toilet_ctrl_data.is_hold_state = true;
 		else {
 			is_need_refresh = true;
+#ifdef Turn_On_Beep
+			//toilet_ctrl_data.is_need_beep = true;
+#endif
 			toilet_ctrl_data.state_change_count++;
 		}
 	}
 
 	if ( level_index_dirty ) {
+		if ( level_index_dirty1 == true )
+			level_index_dirty1 = false;
+		else
+			level_index_dirty = false;
 		//display water&seat&fan&spray temperature level
 		show_display_segment ( DISP_misc_level [ Clear_Misc_Level ], sizeof ( DISP_misc_level [ Clear_Misc_Level ] ), false );
     /*switch  ( toilet_next_state ) {
@@ -98,9 +105,12 @@ void toilet_state_action ( void ) {
         if ( levels >= 0 )
             show_display_segment ( DISP_misc_level [ levels ], sizeof ( DISP_misc_level [ levels ] ), true );
 		//show_display_segment1 ();
-        level_index_dirty = false;
+        //level_index_dirty = false;
 		is_need_refresh = true;
         is_need_redraw = true;
+#ifdef Turn_On_Beep
+		toilet_ctrl_data.is_need_beep = true;
+#endif
 	}
     //if ( toilet_next_state == TOIET_WATER_TEMP_STATE || toilet_next_state == TOIET_SEAT_TEMP_STATE )
         //toilet_next_state = TOIET_DUMMY_STATE;
@@ -136,6 +146,9 @@ void toilet_state_action ( void ) {
         transmit_remote_data ( );
         is_need_refresh = false;
         //show_display_segment1 ();
+#ifdef Turn_On_Beep
+		toilet_ctrl_data.is_need_beep = false;
+#endif
     }    
     return;
     
@@ -160,14 +173,17 @@ void toggle_lock ( void ) {
         toilet_ctrl_data.joystick_lock = lock = 1;
     else
         toilet_ctrl_data.joystick_lock = lock = 0;
-	level_index_dirty = true;
+	if ( level_index_dirty == false )
+		level_index_dirty = true;
+	else
+		level_index_dirty1 = true;
 }
 
 void toggle_spotlight ( void ) {
 	uint8_t i2c_data [ 12 ];
 	I2C2_MESSAGE_STATUS i2c_status = I2C2_MESSAGE_COMPLETE;
 
-	level_index_dirty = true;
+	//level_index_dirty = true;
 	if ( toilet_ctrl_data.spotlight_on_off == false ) {
 		toilet_ctrl_data.spotlight_on_off = true;
         show_display_segment ( &DISP_misc_logo [ Spotlight_Logo ], 1, true );
@@ -176,13 +192,19 @@ void toggle_spotlight ( void ) {
 		toilet_ctrl_data.spotlight_on_off = false;
         show_display_segment ( &DISP_misc_logo [ Spotlight_Logo ], 1, false );
     }
+	if ( level_index_dirty == false )
+		level_index_dirty = true;
+	else
+		level_index_dirty1 = true;
 
-	DISPLAY_ON ();
-	i2c_data [ 0 ] = I2C_HT16C21_CMD_SYSTEM_MODE;
-	i2c_data [ 1 ] |= 0x03;  //system osc & lcd on/on
-	I2C2_MasterWrite ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
-	__delay_ms ( 1 );
-	n_timer_off_count = 0;
+	if ( n_timer_off_count > DISPLAY_OFF_TIMER_OVERFLOW_COUNT ) {
+		DISPLAY_ON ();
+		i2c_data [ 0 ] = I2C_HT16C21_CMD_SYSTEM_MODE;
+		i2c_data [ 1 ] |= 0x03;  //system osc & lcd on/on
+		I2C2_MasterWrite ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
+		__delay_ms ( 1 );
+		n_timer_off_count = 0;
+	}
 }
 
 /* timer ISR to issue key scanning */
@@ -217,6 +239,7 @@ void issue_key_scanning ( void ) {
         return;
     }
     else {
+		if ( n_timer_off_count > n_timer_overflow_count ) {
         DISPLAY_ON ();
         i2c_data [ 0 ] = I2C_HT16C21_CMD_SYSTEM_MODE;
         i2c_data [ 1 ] |= 0x03;  //system osc & lcd on/on
@@ -225,6 +248,7 @@ void issue_key_scanning ( void ) {
 /*#ifdef debug_HT16C21
         I2C2_check_error ( i2c_status );
 #endif*/
+		}
         n_timer_off_count = 0;
     }
     //return;
@@ -251,6 +275,9 @@ void issue_key_scanning ( void ) {
                     else
                         toilet_ctrl_data.water_T_index--;
                 }
+#ifdef Turn_On_Beep
+				//toilet_ctrl_data.is_need_beep = true;
+#endif
 				level_index_dirty = true;
 				level_index = toilet_ctrl_data.water_T_index;
                 show_display_segment ( DISP_mode_logo [ Clear_All_Logo ], sizeof ( DISP_mode_logo [ Clear_All_Logo ] ), false );
@@ -275,6 +302,9 @@ void issue_key_scanning ( void ) {
                         else
                             toilet_ctrl_data.toilet_seat_T_index--;
                     }
+#ifdef Turn_On_Beep
+					//toilet_ctrl_data.is_need_beep = true;
+#endif
 					level_index_dirty = true;
 					level_index = toilet_ctrl_data.toilet_seat_T_index;
                     show_display_segment ( DISP_mode_logo [ Clear_All_Logo ], sizeof ( DISP_mode_logo [ Clear_All_Logo ] ), false );
@@ -326,6 +356,9 @@ void issue_key_scanning ( void ) {
 						   else
 							   toilet_ctrl_data.fan_S_index--;
 					   }
+#ifdef Turn_On_Beep
+					   //toilet_ctrl_data.is_need_beep = true;
+#endif
 					   level_index_dirty = true;
 					   level_index = toilet_ctrl_data.fan_S_index;
 					   toilet_cur_state = TOIET_DUMMY_STATE;
@@ -356,6 +389,9 @@ void issue_key_scanning ( void ) {
 								   lock = toilet_ctrl_data.joystick_lock = 0;
 								   IOCB5 = 1;
 							   }
+#ifdef Turn_On_Beep
+							   //toilet_ctrl_data.is_need_beep = true;
+#endif
 							   level_index_dirty = true;
 							   level_index = toilet_ctrl_data.washing_F_index;
 						   //}
@@ -404,6 +440,9 @@ void issue_key_scanning ( void ) {
 									   lock = toilet_ctrl_data.joystick_lock = 0;
 									   IOCB5 = 1;
 								   }
+#ifdef Turn_On_Beep
+								   //toilet_ctrl_data.is_need_beep = true;
+#endif
 								   level_index_dirty = true;
 								   level_index = toilet_ctrl_data.lady_washing_F_index;
 							   //}
@@ -425,6 +464,9 @@ void issue_key_scanning ( void ) {
 									   toilet_ctrl_data.washing_type = NONE_WASHING_TYPE;
 									   toilet_ctrl_data.spraying_type = NONE_SPRAYING_TYPE;
 								   IOCB5 = 0;
+#ifdef Turn_On_Beep
+								   //toilet_ctrl_data.is_need_beep = true;
+#endif
 								   level_index_dirty = true;
 								   level_index = -1;
 								   //toilet_cur_state = TOIET_DUMMY_STATE;
@@ -459,6 +501,9 @@ void issue_key_scanning ( void ) {
 										   lock = toilet_ctrl_data.joystick_lock = 0;
 										   IOCB5 = 1;
 									   }
+#ifdef Turn_On_Beep
+									   //toilet_ctrl_data.is_need_beep = true;
+#endif
 									   level_index_dirty = true;
 									   level_index = -1;
 									   toilet_cur_state = TOIET_DUMMY_STATE;
@@ -494,6 +539,9 @@ void issue_key_scanning ( void ) {
 											   lock = toilet_ctrl_data.joystick_lock = 0;
 											   IOCB5 = 1;
 										   }
+#ifdef Turn_On_Beep
+										   //toilet_ctrl_data.is_need_beep = true;
+#endif
 										   level_index_dirty = true;
 										   level_index = -1;
 										   toilet_cur_state = TOIET_DUMMY_STATE;
@@ -506,8 +554,11 @@ void issue_key_scanning ( void ) {
 												   else
 													   if ( toilet_ctrl_data.spa_en == true )
 														   toilet_ctrl_data.spa_en = false;
+#ifdef Turn_On_Beep
+												   //toilet_ctrl_data.is_need_beep = true;
+#endif
+												   level_index_dirty = true;  //fire update
 											   }
-											   level_index_dirty = true;  //fire update
 										   }
                                            else
                                                if ( newest_press_key & ( 1 << SW11_washing_move ) ) {
@@ -517,8 +568,11 @@ void issue_key_scanning ( void ) {
 													   else
 														   if ( toilet_ctrl_data.washing_move_en == true )
 															   toilet_ctrl_data.washing_move_en = false;
+#ifdef Turn_On_Beep
+													   //toilet_ctrl_data.is_need_beep = true;
+#endif
+													   level_index_dirty = true;  //fire update
 												   }
-												   level_index_dirty = true;  //fire update                                               
                                                }
     }
 #endif    
@@ -952,11 +1006,11 @@ void show_display_segment1 ( void )
     i2c_data [ 1 ] = 0x00;
     memcpy ( i2c_data + 2, disp_ram_map_data, sizeof ( disp_ram_map_data ) );
     I2C2_MasterWrite ( i2c_data, 12, I2C_HT16C21_ADDRESS, &i2c_status );
-    __delay_ms ( 10 );
+    //__delay_ms ( 2 );
 #ifdef debug_HT16C21
-	I2C2_check_error ( i2c_status );
+	//I2C2_check_error ( i2c_status );
 #endif
-    memset ( i2c_data + 2, 0, sizeof ( disp_ram_map_data ) );
+    /*memset ( i2c_data + 2, 0, sizeof ( disp_ram_map_data ) );
     I2C2_MasterWrite ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
     __delay_ms ( 10 );
     I2C2_MasterRead ( i2c_data + 2, 10, I2C_HT16C21_ADDRESS, &i2c_status );
@@ -985,7 +1039,7 @@ void show_display_segment1 ( void )
     __delay_ms ( 10 );
 #ifdef debug_HT16C21
 	I2C2_check_error ( i2c_status );
-#endif
+#endif*/
     
     
 }
@@ -1018,28 +1072,44 @@ void remote_control_init ( void )
     DISPLAY_OFF ();
     DISPLAY_ON ();
     i2c_data [ 0 ] = I2C_HT16C21_CMD_DRIVE_MODE;
-    i2c_data [ 1 ] = 0x03;  //1/4 duty, 1/3 bias
-    I2C2_MasterWrite ( i2c_data, 1, I2C_HT16C21_ADDRESS, &i2c_status );
+    i2c_data [ 1 ] = 0x00;  //1/4 duty, 1/3 bias
+    I2C2_MasterWrite ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
     __delay_ms ( 10 );
-    i2c_data [ 1 ] = 0x00;
+    /*i2c_data [ 1 ] = 0x00;
     I2C2_MasterRead ( i2c_data + 1, 1, I2C_HT16C21_ADDRESS, &i2c_status );
-    __delay_ms ( 10 );
+    __delay_ms ( 10 );*/
 #ifdef debug_HT16C21
      I2C2_check_error ( i2c_status );
 #endif
     
     i2c_data [ 0 ] = I2C_HT16C21_CMD_SYSTEM_MODE;
-    i2c_data [ 1 ] = 0x00;  //system osc & lcd on/off
-    I2C2_MasterRead ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
+    i2c_data [ 1 ] = 0x03;  //system osc & lcd on/off
+    I2C2_MasterWrite ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
     __delay_ms ( 10 );
 #ifdef debug_HT16C21
 	I2C2_check_error ( i2c_status );
 #endif
 
     i2c_data [ 0 ] = I2C_HT16C21_CMD_FRAME_RATE;
-    i2c_data [ 1 ] &= 0xFF;  //setting frame rate 80Hz
-    I2C2_MasterRead ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
+    i2c_data [ 1 ] = 0x00;  //setting frame rate 80Hz
+    I2C2_MasterWrite ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
     __delay_ms ( 10 );
+#ifdef debug_HT16C21
+	I2C2_check_error ( i2c_status );
+#endif
+
+	i2c_data [ 0 ] = I2C_HT16C21_IVA;
+	i2c_data [ 1 ] = 0x00;  //
+	I2C2_MasterWrite ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
+	__delay_ms ( 10 );
+#ifdef debug_HT16C21
+	I2C2_check_error ( i2c_status );
+#endif    
+
+	i2c_data [ 0 ] = I2C_HT16C21_BLINK_FREQ;
+	i2c_data [ 1 ] = 0x00;  //system osc & lcd on/off
+	I2C2_MasterWrite ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
+	__delay_ms ( 10 );
 #ifdef debug_HT16C21
 	I2C2_check_error ( i2c_status );
 #endif
@@ -1052,19 +1122,26 @@ void remote_control_init ( void )
         else
             disp_ram_map_data [ i ] = 0xFF;
 	}
-    show_display_segment1 ();
+    //show_display_segment1 ();
 
-    for ( i = 0; i < 10; i++ )
-        __delay_ms ( 10 );
+    //for ( i = 0; i < 10; i++ )
+        //__delay_ms ( 10 );
 #endif
 
 	//set whole RAM map as 0
 	for ( i = 0; i < 10; i++ ) {
 		disp_ram_map_data [ i ] = 0x00;
 	}
-    show_display_segment1 ();
+    //show_display_segment1 ();
     
 	show_display_segment ( DISP_regular, sizeof ( DISP_regular), true );
+    show_display_segment ( DISP_7SEG_5 [ Clear_7SEG ], sizeof ( DISP_7SEG_5 [ Clear_7SEG ] ), false );
+    show_display_segment ( DISP_7SEG_6 [ Clear_7SEG ], sizeof ( DISP_7SEG_6 [ Clear_7SEG ] ), false );
+    show_display_segment ( DISP_7SEG_5 [ 2 ], sizeof ( DISP_7SEG_5 [ 2 ] ), true );
+    show_display_segment ( DISP_7SEG_6 [ 6 ], sizeof ( DISP_7SEG_6 [ 6 ] ), true );
+    
+    show_display_segment ( DISP_bat_level [ Clear_Bat_Level ], sizeof ( DISP_bat_level [ Clear_Bat_Level ] ), false );
+    show_display_segment ( DISP_bat_level [ 3 ], sizeof ( DISP_bat_level [ 3 ] ), true );
     show_display_segment1 ();
 
     //start timer0

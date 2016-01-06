@@ -81,6 +81,7 @@ extern "C" {
 //#define debug_A7105_SPI 1  //debug A7105 SPI R/W
 //#define debug_A7105_MASTER 1  //A7105 is half duplex
 //#define debug_A7105_SLAVE 1
+#define Turn_On_Beep 1
 typedef enum {
     TOIET_DUMMY_STATE,
     TOIET_WATER_TEMP_STATE,
@@ -129,8 +130,8 @@ extern volatile TOIET_STATE toilet_cur_state,toilet_last_state, toilet_next_stat
 extern volatile uint8_t lock;
 extern double Env_T;  //enviroment temperature;
 uint8_t disp_ram_map_data [ 10 ] = { 0 };  //display scanning map for HT16C21
-int16_t level_index = -1, level_index_dirty1 = false;
-bool level_index_dirty = false;
+int16_t level_index = -1;
+bool level_index_dirty = false, level_index_dirty1 = false;
 volatile uint16_t routine_refresh_display = 0;
 
 
