@@ -54,8 +54,8 @@ extern "C" {
 
 //for key buffer
 #define KEY_COUNT 11
-#define KEY_BUFFER_SIZE ( 1000 / 131 )
-#define ASSERT_TIMES_THRESHOLD (int)((double) ( 0.6 * 1000 / 131 ))
+#define KEY_BUFFER_SIZE  ( 1000 / 132 )
+#define ASSERT_TIMES_THRESHOLD (int)((double) ( 0.6 * 1000 / 132 ))
  
 //LCD display backlight
 #define DISPLAY_ON() backlight_SetHigh()
@@ -122,13 +122,14 @@ typedef struct {
 	int8_t spraying_type;
 	bool spa_en, washing_move_en, is_hold_state;
 	uint8_t state_change_count;
+	bool is_need_beep;
 } Toilet_Ctl_Data_t;
-Toilet_Ctl_Data_t toilet_ctrl_data = { 0, 0, FAN_OFF, 0, 0, 0, 0, 0, 0, TOIET_DUMMY_STATE, 0, 0, NONE_WASHING_TYPE, 0, NONE_SPRAYING_TYPE, false, false, true, 0 };
+Toilet_Ctl_Data_t toilet_ctrl_data = { 0, 0, FAN_OFF, 0, 0, 0, 0, 0, 0, TOIET_DUMMY_STATE, 0, 0, NONE_WASHING_TYPE, 0, NONE_SPRAYING_TYPE, false, false, true, 0, false };
 extern volatile TOIET_STATE toilet_cur_state,toilet_last_state, toilet_next_state;
 extern volatile uint8_t lock;
 extern double Env_T;  //enviroment temperature;
 uint8_t disp_ram_map_data [ 10 ] = { 0 };  //display scanning map for HT16C21
-int16_t level_index = -1;
+int16_t level_index = -1, level_index_dirty1 = false;
 bool level_index_dirty = false;
 volatile uint16_t routine_refresh_display = 0;
 

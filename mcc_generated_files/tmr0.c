@@ -126,7 +126,7 @@ void TMR0_ISR(void) {
     // reload TMR0
     TMR0L = timer0ReloadVal8bit;
 
-    // callback function - called every 128th pass
+    // callback function - called every 65th pass
     if (++CountCallBack >= TMR0_INTERRUPT_TICKER_FACTOR) {
         // ticker function call
         TMR0_CallBack();

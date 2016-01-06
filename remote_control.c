@@ -5,7 +5,7 @@
 volatile TOIET_STATE toilet_cur_state = TOIET_DUMMY_STATE,toilet_last_state = TOIET_DUMMY_STATE, toilet_next_state = TOIET_DUMMY_STATE;
 volatile uint8_t lock = 0;
 double Env_T = 0.0, BAT_voltage1 = 0.0 , BAT_voltage2 = 0.0;  //enviroment temperature;
-
+static uint16_t n_timer_off_count = 0;
 
 
 uint8_t transmit_remote_data ( /*Toilet_Ctl_Data_t toilet_data*/ ) {
@@ -164,7 +164,10 @@ void toggle_lock ( void ) {
 }
 
 void toggle_spotlight ( void ) {
-    level_index_dirty = true;
+	uint8_t i2c_data [ 12 ];
+	I2C2_MESSAGE_STATUS i2c_status = I2C2_MESSAGE_COMPLETE;
+
+	level_index_dirty = true;
 	if ( toilet_ctrl_data.spotlight_on_off == false ) {
 		toilet_ctrl_data.spotlight_on_off = true;
         show_display_segment ( &DISP_misc_logo [ Spotlight_Logo ], 1, true );
@@ -173,12 +176,19 @@ void toggle_spotlight ( void ) {
 		toilet_ctrl_data.spotlight_on_off = false;
         show_display_segment ( &DISP_misc_logo [ Spotlight_Logo ], 1, false );
     }
+
+	DISPLAY_ON ();
+	i2c_data [ 0 ] = I2C_HT16C21_CMD_SYSTEM_MODE;
+	i2c_data [ 1 ] |= 0x03;  //system osc & lcd on/on
+	I2C2_MasterWrite ( i2c_data, 2, I2C_HT16C21_ADDRESS, &i2c_status );
+	__delay_ms ( 1 );
+	n_timer_off_count = 0;
 }
 
 /* timer ISR to issue key scanning */
 void issue_key_scanning ( void ) {
     //static TOIET_STATE toilet_cur_state = TOIET_DUMMY_STATE, toilet_last_state, toilet_next_state;
-    static uint16_t newest_press_key = 0, n_timer_off_count = 0;
+    static uint16_t newest_press_key = 0;//, n_timer_off_count = 0;
     int16_t n_timer_overflow_count = ( int16_t ) ( ( double ) DISPLAY_OFF_TIMER_OVERFLOW_COUNT );
     uint8_t i2c_data [ 12 ];
     I2C2_MESSAGE_STATUS i2c_status = I2C2_MESSAGE_COMPLETE;
@@ -782,7 +792,7 @@ uint16_t key_scanning ( void ) {
         }
     }
     
-	for ( i = 0, candidate_key_index = -1, Max_Hist = ( uint16_t ) ASSERT_TIMES_THRESHOLD - 3; i < KEY_COUNT; i++ )
+	for ( i = 0, candidate_key_index = -1, Max_Hist = ( uint16_t ) 2/*ASSERT_TIMES_THRESHOLD*/; i < KEY_COUNT; i++ )
 		if ( key_buf_hist [ i ] >= Max_Hist ) {
 			Max_Hist = key_buf_hist [ i ];
 			candidate_key_index = i;
@@ -828,7 +838,7 @@ uint16_t key_scanning ( void ) {
 							key_buf_hist [ j ]--;
 				}
 			}
-			for ( i = 0, candidate_key_index = -1, Max_Hist = ( uint16_t ) ASSERT_TIMES_THRESHOLD - 3; i < KEY_COUNT; i++ )
+			for ( i = 0, candidate_key_index = -1, Max_Hist = ( uint16_t ) 1/*ASSERT_TIMES_THRESHOLD - 2*/; i < KEY_COUNT; i++ )
 				if ( key_buf_hist [ i ] >= Max_Hist ) {
 					Max_Hist = key_buf_hist [ i ];
 					candidate_key_index = i;

@@ -54,7 +54,7 @@ void main(void) {
     //TMR0_StartTimer( );
     remote_control_init ();
     while (1) {
-        __delay_ms (10);
+        //__delay_ms (10);
         toilet_state_action ();
     }
     //show_display_segment ( DISP_mode_logo[Clear_All_Logo], sizeof ( DISP_mode_logo[Clear_All_Logo] ), false );

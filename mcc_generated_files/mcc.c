@@ -60,7 +60,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 // CONFIG2H
 #pragma config WDTPS = 32768    // Watchdog Timer Postscale Select bits->1:32768
-#pragma config WDTEN = OFF    // Watchdog Timer Enable bits->Watch dog timer is always disabled. SWDTEN has no effect.
+#pragma config WDTEN = ON    // Watchdog Timer Enable bits->WDT is always enabled. SWDTEN bit has no effect
 
 // CONFIG3H
 #pragma config CCP2MX = PORTC1    // CCP2 MUX bit->CCP2 input/output is multiplexed with RC1
@@ -68,7 +68,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #pragma config HFOFST = ON    // HFINTOSC Fast Start-up->HFINTOSC output and ready status are not delayed by the oscillator stable status
 #pragma config PBADEN = ON    // PORTB A/D Enable bit->PORTB<5:0> pins are configured as analog input channels on Reset
 #pragma config CCP3MX = PORTB5    // P3A/CCP3 Mux bit->P3A/CCP3 input/output is multiplexed with RB5
-#pragma config MCLRE = EXTMCLR    // MCLR Pin Enable bit->MCLR pin enabled, RE3 input pin disabled
+#pragma config MCLRE = INTMCLR    // MCLR Pin Enable bit->RE3 input pin enabled; MCLR disabled
 #pragma config T3CMX = PORTC0    // Timer3 Clock input mux bit->T3CKI is on RC0
 
 // CONFIG4L

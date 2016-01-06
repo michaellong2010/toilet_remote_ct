@@ -78,7 +78,7 @@ void PIN_MANAGER_IOC(void) {
 
 	while ( i++ < 5 )
 		__delay_ms ( 10 );
-	if ((IOCB5 == 1) && (RBIF == 1)) {
+    if ((IOCB5 == 1) && (RBIF == 1)) {
 		i = single_key_count = 0;
 		while ( i++ < 10 ) {
 			if ( !rocker_lock_GetValue () )
@@ -93,7 +93,7 @@ void PIN_MANAGER_IOC(void) {
 	}
 	//else
 	if ((IOCB7 == 1) && (RBIF == 1)) {
-		//@TODO Add handling code for IOC on pin RB5
+        //@TODO Add handling code for IOC on pin RB5
 		i = single_key_count = 0;
 		while ( i++ < 10 ) {
 			if ( !spotlight_GetValue () )
@@ -101,13 +101,13 @@ void PIN_MANAGER_IOC(void) {
 		}
 		if ( single_key_count == 10 ) {
 			toggle_spotlight ();
-			RBIF = 0;
+        RBIF = 0;
 		}
 		//if ( !rocker_lock_GetValue () )
 		//toggle_lock ();
-		// clear interrupt-on-change flag
-		RBIF = 0;
-	}
+        // clear interrupt-on-change flag
+        RBIF = 0;
+    }
 }
 /**
  End of File

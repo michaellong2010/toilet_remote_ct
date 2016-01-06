@@ -26,8 +26,9 @@
             <resource customName="SDO1" digital="true" direction="OUTPUT" function="SDO1" module="MSSP1" name="RC5" start="false" type="pin" wpu="false"/>
             <resource customName="TX1" digital="true" direction="INPUT" function="TX1" module="EUSART1" name="RC6" start="false" type="pin" wpu="false"/>
             <resource customName="RX1" digital="true" direction="INPUT" function="RX1" module="EUSART1" name="RC7" start="false" type="pin" wpu="false"/>
+            <resource customName="washing_move" digital="true" direction="INPUT" function="RE3" module="GPIO" name="RE3" start="false" type="pin" wpu="false"/>
             <file checksum="3723073862" modified="true" name="pin_manager.c" path="mcc_generated_files/pin_manager.c"/>
-            <file checksum="3033942696" modified="false" name="pin_manager.h" path="mcc_generated_files/pin_manager.h"/>
+            <file checksum="1036351145" modified="false" name="pin_manager.h" path="mcc_generated_files/pin_manager.h"/>
         </manager>
         <manager generated="true" name="System" reloadPin="manual">
             <initializer comment="" name="Initialize">
@@ -52,13 +53,13 @@
             <setting name="BORV" option="190"/>
             <setting name="PWRTEN" option="OFF"/>
             <setting name="WDTPS" option="32768"/>
-            <setting name="WDTEN" option="OFF"/>
+            <setting name="WDTEN" option="ON"/>
             <setting name="CCP2MX" option="PORTC1"/>
             <setting name="P2BMX" option="PORTB5"/>
             <setting name="HFOFST" option="ON"/>
             <setting name="PBADEN" option="ON"/>
             <setting name="CCP3MX" option="PORTB5"/>
-            <setting name="MCLRE" option="EXTMCLR"/>
+            <setting name="MCLRE" option="INTMCLR"/>
             <setting name="T3CMX" option="PORTC0"/>
             <setting name="LVP" option="OFF"/>
             <setting name="STVREN" option="ON"/>
@@ -83,7 +84,7 @@
             <setting name="EBTR0" option="OFF"/>
             <setting name="EBTRB" option="OFF"/>
             <setting name="generateConfigBits" option="true"/>
-            <file checksum="1724993470" modified="false" name="mcc.c" path="mcc_generated_files/mcc.c"/>
+            <file checksum="3538176579" modified="false" name="mcc.c" path="mcc_generated_files/mcc.c"/>
             <file checksum="4172622737" modified="false" name="mcc.h" path="mcc_generated_files/mcc.h"/>
         </manager>
         <manager generated="true" name="Interrupt Manager" reloadPin="manual">
@@ -137,6 +138,7 @@
             <resource customName="env_temp_en" digital="true" direction="INPUT" function="RB3" module="GPIO" name="RB3" start="false" type="pin" wpu="false"/>
             <resource customName="backlight" digital="true" direction="OUTPUT" function="RB4" ioc="0" module="GPIO" name="RB4" start="false" type="pin" wpu="false"/>
             <resource customName="spotlight" digital="true" direction="INPUT" function="RB7" ioc="4" module="GPIO" name="RB7" start="false" type="pin" wpu="true"/>
+            <resource customName="washing_move" digital="true" direction="INPUT" function="RE3" module="GPIO" name="RE3" start="false" type="pin" wpu="false"/>
         </module>
         <module generated="true" mode="Timer" name="TMR0" order="2" reloadPin="manual" type="tmr_timer0">
             <initializer comment="" name="Initialize">
@@ -154,9 +156,9 @@
                 <additionalSetting name="periodChanged" option="1.024ms"/>
             </initializer>
             <setting name="TMRI" option="true"/>
-            <setting name="ticker" option="128"/>
-            <file checksum="1151043318" modified="true" name="tmr0.c" path="mcc_generated_files/tmr0.c"/>
-            <file checksum="3006578789" modified="false" name="tmr0.h" path="mcc_generated_files/tmr0.h"/>
+            <setting name="ticker" option="65"/>
+            <file checksum="3670719209" modified="true" name="tmr0.c" path="mcc_generated_files/tmr0.c"/>
+            <file checksum="1773387829" modified="false" name="tmr0.h" path="mcc_generated_files/tmr0.h"/>
         </module>
         <module generated="true" mode="ADC" name="ADC" order="3" reloadPin="manual_auto" type="adc_sarcore_10bit">
             <initializer comment="" name="Initialize">
