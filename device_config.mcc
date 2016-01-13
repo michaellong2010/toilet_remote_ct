@@ -91,11 +91,13 @@
             <setting name="preemptHigh" option="true"/>
             <setting name="preemptLow" option="true"/>
             <setting name="useIPEN" option="true"/>
-            <file checksum="852471831" modified="false" name="interrupt_manager.c" path="mcc_generated_files/interrupt_manager.c"/>
+            <file checksum="579664884" modified="false" name="interrupt_manager.c" path="mcc_generated_files/interrupt_manager.c"/>
             <file checksum="2313270852" modified="false" name="interrupt_manager.h" path="mcc_generated_files/interrupt_manager.h"/>
             <interrupt module="MSSP2" name="SSPI" priority="2"/>
             <interrupt module="MSSP2" name="BCLI" priority="2"/>
             <interrupt module="Pin Manager" name="RBI" priority="2"/>
+            <interrupt module="EUSART1" name="RCI" priority="2"/>
+            <interrupt module="EUSART1" name="TXI" priority="2"/>
             <interrupt module="TMR0" name="TMRI" priority="1"/>
         </manager>
     </managers>
@@ -137,8 +139,8 @@
             <resource customName="key_scan_out3" digital="true" direction="OUTPUT" function="RC2" module="GPIO" name="RC2" start="true" type="pin" wpu="false"/>
             <resource customName="env_temp_en" digital="true" direction="INPUT" function="RB3" module="GPIO" name="RB3" start="false" type="pin" wpu="false"/>
             <resource customName="backlight" digital="true" direction="OUTPUT" function="RB4" ioc="0" module="GPIO" name="RB4" start="false" type="pin" wpu="false"/>
-            <resource customName="spotlight" digital="true" direction="INPUT" function="RB7" ioc="4" module="GPIO" name="RB7" start="false" type="pin" wpu="true"/>
             <resource customName="washing_move" digital="true" direction="INPUT" function="RE3" module="GPIO" name="RE3" start="false" type="pin" wpu="false"/>
+            <resource customName="spotlight" digital="true" direction="INPUT" function="RB7" ioc="4" module="GPIO" name="RB7" start="false" type="pin" wpu="true"/>
         </module>
         <module generated="true" mode="Timer" name="TMR0" order="2" reloadPin="manual" type="tmr_timer0">
             <initializer comment="" name="Initialize">
@@ -254,13 +256,13 @@
                 <setting name="RCREG" option="0" register="RCREG1"/>
                 <additionalSetting name="baudrateString" option="9600"/>
             </initializer>
-            <setting name="RCI" option="false"/>
-            <setting name="TXI" option="false"/>
-            <setting name="inputBuffer" option="8"/>
+            <setting name="RCI" option="true"/>
+            <setting name="TXI" option="true"/>
+            <setting name="inputBuffer" option="32"/>
             <setting name="outputBuffer" option="8"/>
             <setting name="stdio" option="false"/>
-            <file checksum="1285525710" modified="false" name="eusart1.c" path="mcc_generated_files/eusart1.c"/>
-            <file checksum="2393335704" modified="false" name="eusart1.h" path="mcc_generated_files/eusart1.h"/>
+            <file checksum="1824068478" modified="true" name="eusart1.c" path="mcc_generated_files/eusart1.c"/>
+            <file checksum="1164542187" modified="true" name="eusart1.h" path="mcc_generated_files/eusart1.h"/>
         </module>
     </modules>
 </configuration>

@@ -54,7 +54,7 @@ extern "C" {
 
 //for key buffer
 #define KEY_COUNT 11
-#define KEY_BUFFER_SIZE  ( 1000 / 132 )
+#define KEY_BUFFER_SIZE  11//( 1000 / 132 )
 #define ASSERT_TIMES_THRESHOLD (int)((double) ( 0.6 * 1000 / 132 ))
  
 //LCD display backlight
@@ -82,6 +82,8 @@ extern "C" {
 //#define debug_A7105_MASTER 1  //A7105 is half duplex
 //#define debug_A7105_SLAVE 1
 #define Turn_On_Beep 1
+#define UART_TIMEOUT_COUNT 20
+
 typedef enum {
     TOIET_DUMMY_STATE,
     TOIET_WATER_TEMP_STATE,
@@ -144,6 +146,7 @@ void show_display_segment ( uint8_t *disp_seg, uint8_t len, bool is_show );
 void show_display_segment1 ( void );
 void toggle_lock ( void );
 void toggle_spotlight ( void );
+extern volatile uint8_t UART_RX_timeout_timer;
 
 #ifdef	__cplusplus
 }

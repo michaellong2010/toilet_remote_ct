@@ -48,12 +48,37 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
   Section: Included Files
  */
 #include "eusart1.h"
+#include "../remote_control.h"
+
+/**
+  Section: Macro Declarations
+ */
+#define EUSART1_TX_BUFFER_SIZE 8
+#define EUSART1_RX_BUFFER_SIZE 32
+
+/**
+  Section: Global Variables
+ */
+
+static uint8_t eusart1TxHead = 0;
+static uint8_t eusart1TxTail = 0;
+static uint8_t eusart1TxBuffer[EUSART1_TX_BUFFER_SIZE];
+volatile uint8_t eusart1TxBufferRemaining;
+
+static uint8_t eusart1RxHead = 0;
+static uint8_t eusart1RxTail = 0;
+static uint8_t eusart1RxBuffer[EUSART1_RX_BUFFER_SIZE];
+volatile uint8_t eusart1RxCount;
 
 /**
   Section: EUSART1 APIs
  */
 
 void EUSART1_Initialize(void) {
+    // disable interrupts before changing states
+    PIE1bits.RC1IE = 0;
+    PIE1bits.TX1IE = 0;
+
     // Set the EUSART1 module to the options selected in the user interface.
 
     // ABDEN disabled; WUE disabled; RCIDL idle; ABDOVF no_overflow; CKTXP async_noninverted_sync_fallingedge; BRG16 16bit_generator; DTRXP not_inverted; 
@@ -71,13 +96,98 @@ void EUSART1_Initialize(void) {
     // Baud Rate = 9600; SPBRGH 6; 
     SPBRGH1 = 0x06;
 
+
+    // initializing the driver state
+    eusart1TxHead = 0;
+    eusart1TxTail = 0;
+    eusart1TxBufferRemaining = sizeof (eusart1TxBuffer);
+
+    eusart1RxHead = 0;
+    eusart1RxTail = 0;
+    eusart1RxCount = 0;
+
+    // enable receive interrupt
+    PIE1bits.RC1IE = 1;
 }
 
-uint8_t EUSART1_Read(void) {
+uint8_t EUSART1_Read(uint8_t *data_buf) {
+    uint8_t readValue = 0, nBytes = 0, nBytes1 = 0;
 
-    while (!PIR1bits.RC1IF) {
+    //while (0 == eusart1RxCount) {
+    //}
+	while (!PIR1bits.RC1IF && UART_RX_timeout_timer < UART_TIMEOUT_COUNT ) {
+	}
+
+	PIE1bits.RC1IE = 0;
+
+	/*while ( eusart1RxCount > 0 ) {
+		//readValue = eusart1RxBuffer[eusart1RxTail++];
+		data_buf [ nBytes++ ] = eusart1RxBuffer[eusart1RxTail++];
+		if (sizeof (eusart1RxBuffer) <= eusart1RxTail) {
+			eusart1RxTail = 0;
+		}
+		eusart1RxCount--;
+	}*/
+	/*nBytes1 = sizeof (eusart1RxBuffer) - eusart1RxTail;
+	nBytes = eusart1RxCount - nBytes1;
+	if ( nBytes > 0 ) {
+		memcpy ( ( void * ) data_buf, ( void * ) ( eusart1RxBuffer + eusart1RxTail ), nBytes1 );
+		memcpy ( ( void * ) data_buf + nBytes1, ( void * ) ( eusart1RxBuffer ), nBytes );
+	}
+	else*/
+		memcpy ( ( void * ) data_buf, ( void * ) ( eusart1RxBuffer + eusart1RxTail ), eusart1RxCount );
+		if ( ( eusart1RxTail + eusart1RxCount ) >= sizeof (eusart1RxBuffer) )
+			eusart1RxTail = eusart1RxTail + eusart1RxCount - sizeof (eusart1RxBuffer);
+		else
+			eusart1RxTail += eusart1RxCount;
+
+	nBytes = eusart1RxCount;
+	eusart1RxCount = 0;
+	PIE1bits.RC1IE = 1;
+
+    //return readValue;
+    return nBytes;
+}
+
+/*void EUSART1_Write(uint8_t txData) {
+    while (0 == eusart1TxBufferRemaining) {
     }
 
+    if (0 == PIE1bits.TX1IE) {
+        TXREG1 = txData;
+    } else {
+        PIE1bits.TX1IE = 0;
+        eusart1TxBuffer[eusart1TxHead++] = txData;
+        if (sizeof (eusart1TxBuffer) <= eusart1TxHead) {
+            eusart1TxHead = 0;
+        }
+        eusart1TxBufferRemaining--;
+    }
+    PIE1bits.TX1IE = 1;
+}
+
+void EUSART1_Transmit_ISR(void) {
+
+    // add your EUSART1 interrupt custom code
+    if (sizeof (eusart1TxBuffer) > eusart1TxBufferRemaining) {
+        TXREG1 = eusart1TxBuffer[eusart1TxTail++];
+        if (sizeof (eusart1TxBuffer) <= eusart1TxTail) {
+            eusart1TxTail = 0;
+        }
+        eusart1TxBufferRemaining++;
+    } else {
+        PIE1bits.TX1IE = 0;
+    }
+}*/
+
+void EUSART1_Write(uint8_t txData) {
+    while (0 == PIR1bits.TX1IF) {
+    }
+
+    TXREG1 = txData; // Write the data byte to the USART.
+}
+
+void EUSART1_Receive_ISR(void) {
     if (1 == RC1STAbits.OERR) {
         // EUSART1 error - restart
 
@@ -85,14 +195,12 @@ uint8_t EUSART1_Read(void) {
         RC1STAbits.CREN = 1;
     }
 
-    return RCREG1;
-}
-
-void EUSART1_Write(uint8_t txData) {
-    while (0 == PIR1bits.TX1IF) {
+    // buffer overruns are ignored
+    eusart1RxBuffer[eusart1RxHead++] = RCREG1;
+    if (sizeof (eusart1RxBuffer) <= eusart1RxHead) {
+        eusart1RxHead = 0;
     }
-
-    TXREG1 = txData; // Write the data byte to the USART.
+    eusart1RxCount++;
 }
 /**
   End of File

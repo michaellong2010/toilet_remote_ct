@@ -140,6 +140,7 @@ void TMR0_ISR(void) {
             routine_refresh_display = 1;
         }
     A7105_timer++;
+	UART_RX_timeout_timer++;
 
     // add your TMR0 interrupt custom code
 }

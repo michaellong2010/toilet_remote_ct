@@ -64,6 +64,12 @@ void INTERRUPT_Initialize(void) {
     // RBI - high priority
     INTCON2bits.RBIP = 1;
 
+    // RCI - high priority
+    IPR1bits.RC1IP = 1;
+
+    // TXI - high priority
+    IPR1bits.TX1IP = 1;
+
 
     // TMRI - low priority
     INTCON2bits.TMR0IP = 0;
@@ -82,7 +88,11 @@ void interrupt INTERRUPT_InterruptManagerHigh(void) {
 
         // clear global interrupt-on-change flag
         INTCONbits.RBIF = 0;
-    } else {
+    } else if (PIE1bits.RC1IE == 1 && PIR1bits.RC1IF == 1) {
+        EUSART1_Receive_ISR();
+    } else /*if (PIE1bits.TX1IE == 1 && PIR1bits.TX1IF == 1) {
+        EUSART1_Transmit_ISR();
+    } else*/ {
         //Unhandled Interrupt
     }
 }
